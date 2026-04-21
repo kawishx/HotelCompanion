@@ -1,13 +1,13 @@
 //
-//  RootTabView.swift
+//  MainTabView.swift
 //  HotelCompanion
 //
-//  File: Features/Root/Views/RootTabView.swift
+//  File: Features/Root/Views/MainTabView.swift
 //
 
 import SwiftUI
 
-struct RootTabView: View {
+struct MainTabView: View {
     @StateObject private var viewModel = RootViewModel()
 
     var body: some View {
@@ -53,10 +53,10 @@ struct RootTabView: View {
             .tag(AppTab.profile)
         }
         .tint(AppColors.accentGold)
+        .accessibilityLabel("Main navigation tabs")
     }
 }
 
 #Preview {
-    RootTabView()
+    MainTabView()
 }
-

@@ -16,7 +16,7 @@ struct HotelCompanionApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootTabView()
+            AppFlowView()
         }
     }
 
@@ -47,4 +47,3 @@ struct HotelCompanionApp: App {
         UINavigationBar.appearance().compactAppearance = navigationAppearance
     }
 }
-
