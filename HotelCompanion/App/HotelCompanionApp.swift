@@ -10,6 +10,9 @@ import UIKit
 
 @main
 struct HotelCompanionApp: App {
+    @UIApplicationDelegateAdaptor(AppNotificationDelegate.self) private var appDelegate
+    @StateObject private var geofenceManager = GeofenceManager.shared
+
     init() {
         configureAppearance()
     }
@@ -17,6 +20,9 @@ struct HotelCompanionApp: App {
     var body: some Scene {
         WindowGroup {
             AppFlowView()
+                .task {
+                    geofenceManager.configure()
+                }
         }
     }
 

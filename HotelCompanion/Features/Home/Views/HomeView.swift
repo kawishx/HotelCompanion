@@ -22,6 +22,7 @@ struct HomeView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.xLarge) {
                 heroHeader
+                geofenceSection
                 activeStaySection
                 recommendationSection
                 quickActionsSection
@@ -51,6 +52,10 @@ private extension HomeView {
                 .fixedSize(horizontal: false, vertical: true)
         }
         .accessibilityElement(children: .combine)
+    }
+
+    var geofenceSection: some View {
+        GeofenceStatusCard()
     }
 
     var activeStaySection: some View {
