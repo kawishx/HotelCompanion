@@ -253,6 +253,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Cinnamon Companion uses Face ID for faster and secure biometric sign in.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Cinnamon Companion uses your location in the background to detect hotel arrival and departure for check-in and concierge assistance.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Cinnamon Companion uses your location to show nearby attractions and your live position on the map.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -286,6 +287,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Cinnamon Companion uses Face ID for faster and secure biometric sign in.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Cinnamon Companion uses your location in the background to detect hotel arrival and departure for check-in and concierge assistance.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Cinnamon Companion uses your location to show nearby attractions and your live position on the map.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

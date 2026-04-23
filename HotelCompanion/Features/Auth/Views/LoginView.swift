@@ -46,6 +46,9 @@ struct LoginView: View {
             }
             .scrollDismissesKeyboard(.interactively)
         }
+        .task {
+            viewModel.refreshBiometricState()
+        }
     }
 
     private var heroSection: some View {
@@ -114,6 +117,14 @@ struct LoginView: View {
 
     private var actionsSection: some View {
         VStack(spacing: AppSpacing.large) {
+            if let biometricErrorMessage = viewModel.biometricErrorMessage {
+                Text(biometricErrorMessage)
+                    .font(AppTypography.footnote)
+                    .foregroundStyle(AppColors.brandBrown)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityLabel("Biometric sign in message: \(biometricErrorMessage)")
+            }
+
             PrimaryButton(title: "Sign In", systemImage: "arrow.right.circle.fill") {
                 onSignIn()
             }
@@ -121,28 +132,36 @@ struct LoginView: View {
             .opacity(viewModel.canSignIn ? 1 : 0.55)
             .accessibilityLabel("Sign in to Cinnamon Companion")
 
-            Button {
-            } label: {
-                HStack(spacing: AppSpacing.small) {
-                    Image(systemName: "faceid")
-                        .font(.title3)
+            if viewModel.shouldShowBiometricButton {
+                Button {
+                    Task {
+                        let didAuthenticate = await viewModel.authenticateWithBiometrics()
+                        if didAuthenticate {
+                            onSignIn()
+                        }
+                    }
+                } label: {
+                    HStack(spacing: AppSpacing.small) {
+                        Image(systemName: viewModel.biometricKind.systemImageName)
+                            .font(.title3)
 
-                    Text("Use Face ID / Touch ID")
-                        .font(AppTypography.button)
+                        Text(viewModel.biometricButtonTitle)
+                            .font(AppTypography.button)
+                    }
+                    .foregroundStyle(AppColors.brandBrown)
+                    .frame(maxWidth: .infinity)
+                    .frame(minHeight: AppSpacing.minimumTouchTarget)
+                    .background(AppColors.surfaceCream.opacity(0.96))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppSpacing.buttonCornerRadius, style: .continuous)
+                            .stroke(AppColors.border, lineWidth: 1)
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: AppSpacing.buttonCornerRadius, style: .continuous))
                 }
-                .foregroundStyle(AppColors.brandBrown)
-                .frame(maxWidth: .infinity)
-                .frame(minHeight: AppSpacing.minimumTouchTarget)
-                .background(AppColors.surfaceCream.opacity(0.96))
-                .overlay(
-                    RoundedRectangle(cornerRadius: AppSpacing.buttonCornerRadius, style: .continuous)
-                        .stroke(AppColors.border, lineWidth: 1)
-                )
-                .clipShape(RoundedRectangle(cornerRadius: AppSpacing.buttonCornerRadius, style: .continuous))
+                .buttonStyle(.plain)
+                .accessibilityLabel(viewModel.biometricButtonTitle)
+                .accessibilityHint("Signs in with biometric authentication")
             }
-            .buttonStyle(.plain)
-            .accessibilityLabel("Use Face ID or Touch ID")
-            .accessibilityHint("Biometric sign in placeholder")
 
             Button {
                 onGuestContinue()
