@@ -61,10 +61,59 @@ struct BookingManagementView: View {
                                     .font(AppTypography.body)
                                     .foregroundStyle(AppColors.secondaryText)
                                     .fixedSize(horizontal: false, vertical: true)
+
+                                NavigationLink {
+                                    QRPassView(booking: booking)
+                                } label: {
+                                    HStack(spacing: AppSpacing.small) {
+                                        Text("Open QR Pass")
+                                            .font(AppTypography.bodyEmphasized)
+                                            .foregroundStyle(AppColors.brandBrown)
+
+                                        Image(systemName: "qrcode")
+                                            .foregroundStyle(AppColors.brandBrown)
+                                            .accessibilityHidden(true)
+                                    }
+                                    .frame(minHeight: AppSpacing.minimumTouchTarget)
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("Open QR pass for \(booking.title)")
                             }
-                            .accessibilityElement(children: .combine)
                         }
                     }
+                }
+
+                SectionCard(title: "QR Validation") {
+                    NavigationLink {
+                        QRScannerView(bookings: viewModel.upcomingBookings)
+                    } label: {
+                        HStack(spacing: AppSpacing.medium) {
+                            Image(systemName: "qrcode.viewfinder")
+                                .font(.headline)
+                                .foregroundStyle(AppColors.brandBrown)
+                                .frame(width: 32, height: 32)
+                                .background(AppColors.accentGoldSoft.opacity(0.35))
+                                .clipShape(Circle())
+                                .accessibilityHidden(true)
+
+                            VStack(alignment: .leading, spacing: AppSpacing.xSmall) {
+                                Text("Scan Booking QR Code")
+                                    .font(AppTypography.headline)
+                                    .foregroundStyle(AppColors.primaryText)
+
+                                Text("Validate a guest booking code with the device camera.")
+                                    .font(AppTypography.body)
+                                    .foregroundStyle(AppColors.secondaryText)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+
+                            Spacer()
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .frame(minHeight: AppSpacing.minimumTouchTarget)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Scan booking QR code")
                 }
 
                 SectionCard(title: "Booked Experiences") {

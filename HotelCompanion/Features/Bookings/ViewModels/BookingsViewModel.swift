@@ -12,13 +12,32 @@ struct BookingSummary: Identifiable {
     let id = UUID()
     let title: String
     let detail: String
+    let guestName: String
+    let confirmationCode: String
+    let propertyName: String
+
+    var qrPayload: String {
+        "cinnamon-booking|\(confirmationCode)|\(guestName)|\(propertyName)"
+    }
 }
 
 @MainActor
 final class BookingsViewModel: ObservableObject {
     @Published private(set) var upcomingBookings: [BookingSummary] = [
-        BookingSummary(title: "Oceanfront Suite", detail: "12 May to 15 May • 2 guests"),
-        BookingSummary(title: "Airport Transfer", detail: "Arrival pickup requested • Awaiting confirmation")
+        BookingSummary(
+            title: "Oceanfront Suite",
+            detail: "12 May to 15 May • 2 guests",
+            guestName: "Kawish Jayawardena",
+            confirmationCode: "CC48291",
+            propertyName: "Cinnamon Bentota Beach"
+        ),
+        BookingSummary(
+            title: "Airport Transfer",
+            detail: "Arrival pickup requested • Awaiting confirmation",
+            guestName: "Kawish Jayawardena",
+            confirmationCode: "CC48292",
+            propertyName: "Cinnamon Bentota Beach"
+        )
     ]
     @Published private(set) var bookedExperiences: [ExperienceBooking]
 

@@ -27,10 +27,29 @@ struct BookingsView: View {
                 }
 
                 ForEach(viewModel.upcomingBookings) { booking in
-                    SectionCard(title: booking.title) {
-                        Text(booking.detail)
-                            .font(AppTypography.body)
-                            .foregroundStyle(AppColors.secondaryText)
+                    SectionCard(title: booking.title, subtitle: booking.propertyName) {
+                        VStack(alignment: .leading, spacing: AppSpacing.medium) {
+                            Text(booking.detail)
+                                .font(AppTypography.body)
+                                .foregroundStyle(AppColors.secondaryText)
+
+                            NavigationLink {
+                                BookingConfirmationView(booking: booking)
+                            } label: {
+                                HStack(spacing: AppSpacing.small) {
+                                    Text("View Booking QR Pass")
+                                        .font(AppTypography.bodyEmphasized)
+                                        .foregroundStyle(AppColors.brandBrown)
+
+                                    Image(systemName: "qrcode")
+                                        .foregroundStyle(AppColors.brandBrown)
+                                        .accessibilityHidden(true)
+                                }
+                                .frame(minHeight: AppSpacing.minimumTouchTarget)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("View QR pass for \(booking.title)")
+                        }
                     }
                 }
 
