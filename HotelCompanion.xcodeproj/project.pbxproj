@@ -254,6 +254,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription = "Cinnamon Companion uses Calendar access to add your booked experiences to your iPhone calendar.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Cinnamon Companion uses the camera to capture ID documents and maintenance issue photos.";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "Cinnamon Companion uses Face ID for faster and secure biometric sign in.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Cinnamon Companion uses your location in the background to detect hotel arrival and departure for check-in and concierge assistance.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Cinnamon Companion uses your location to show nearby attractions and your live position on the map.";
@@ -289,6 +290,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription = "Cinnamon Companion uses Calendar access to add your booked experiences to your iPhone calendar.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "Cinnamon Companion uses the camera to capture ID documents and maintenance issue photos.";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "Cinnamon Companion uses Face ID for faster and secure biometric sign in.";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Cinnamon Companion uses your location in the background to detect hotel arrival and departure for check-in and concierge assistance.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Cinnamon Companion uses your location to show nearby attractions and your live position on the map.";

@@ -26,6 +26,7 @@ struct HomeView: View {
                 activeStaySection
                 recommendationSection
                 quickActionsSection
+                serviceRequestSection
                 upcomingBookingSection
                 notificationsSection
             }
@@ -139,6 +140,38 @@ private extension HomeView {
                 ForEach(viewModel.quickActions) { action in
                     HomeQuickActionCard(action: action) { }
                 }
+            }
+        }
+    }
+
+    var serviceRequestSection: some View {
+        SectionCard(
+            title: "Service Request",
+            subtitle: "Report maintenance issues with a photo"
+        ) {
+            VStack(alignment: .leading, spacing: AppSpacing.medium) {
+                Text("Capture a maintenance issue and send a clearer request to the hotel team with supporting photos.")
+                    .font(AppTypography.body)
+                    .foregroundStyle(AppColors.secondaryText)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                NavigationLink {
+                    ServiceRequestView()
+                } label: {
+                    HStack(spacing: AppSpacing.small) {
+                        Text("Open Service Request")
+                            .font(AppTypography.bodyEmphasized)
+                            .foregroundStyle(AppColors.brandBrown)
+
+                        Image(systemName: "chevron.right.circle.fill")
+                            .foregroundStyle(AppColors.brandBrown)
+                            .accessibilityHidden(true)
+                    }
+                    .frame(minHeight: AppSpacing.minimumTouchTarget)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Open service request")
+                .accessibilityHint("Upload a maintenance issue photo")
             }
         }
     }

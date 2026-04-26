@@ -23,10 +23,30 @@ struct BookingManagementView: View {
                     title: "Reservation Overview",
                     subtitle: "Manage upcoming stays and scheduled experiences"
                 ) {
-                    Text("Add booked experiences to your iPhone Calendar so your itinerary stays visible alongside your other plans.")
-                        .font(AppTypography.body)
-                        .foregroundStyle(AppColors.secondaryText)
-                        .fixedSize(horizontal: false, vertical: true)
+                    VStack(alignment: .leading, spacing: AppSpacing.medium) {
+                        Text("Add booked experiences to your iPhone Calendar so your itinerary stays visible alongside your other plans.")
+                            .font(AppTypography.body)
+                            .foregroundStyle(AppColors.secondaryText)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        NavigationLink {
+                            DigitalCheckInView()
+                        } label: {
+                            HStack(spacing: AppSpacing.small) {
+                                Text("Open Digital Check-In")
+                                    .font(AppTypography.bodyEmphasized)
+                                    .foregroundStyle(AppColors.brandBrown)
+
+                                Image(systemName: "chevron.right.circle.fill")
+                                    .foregroundStyle(AppColors.brandBrown)
+                                    .accessibilityHidden(true)
+                            }
+                            .frame(minHeight: AppSpacing.minimumTouchTarget)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Open digital check-in")
+                        .accessibilityHint("Upload your ID or passport for arrival")
+                    }
                 }
 
                 SectionCard(title: "Upcoming Bookings") {
@@ -115,4 +135,3 @@ struct BookingManagementView: View {
         }
     }
 }
-
