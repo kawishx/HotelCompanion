@@ -35,13 +35,3 @@ struct UpcomingBookingPreview {
     let dateRange: String
     let detail: String
 }
-
-struct NotificationPreview: Identifiable {
-    let id = UUID()
-    let title: String
-    let message: String
-    let timeLabel: String
-    let systemImage: String
-    let isUnread: Bool
-}
-

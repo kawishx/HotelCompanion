@@ -38,20 +38,9 @@ final class HomeViewModel: ObservableObject {
         dateRange: "24 Apr • 2:30 PM",
         detail: "Private departure transfer to Bandaranaike International Airport."
     )
-    @Published private(set) var notifications: [NotificationPreview] = [
-        NotificationPreview(
-            title: "Dining Reminder",
-            message: "Your table at Lagoon Grill is confirmed for 8:00 PM tonight.",
-            timeLabel: "10 min ago",
-            systemImage: "fork.knife.circle.fill",
-            isUnread: true
-        ),
-        NotificationPreview(
-            title: "Service Update",
-            message: "Housekeeping has completed your evening refresh request.",
-            timeLabel: "35 min ago",
-            systemImage: "checkmark.seal.fill",
-            isUnread: false
-        )
-    ]
+    @Published private(set) var notifications: [AppNotificationItem]
+
+    init(notificationManager: NotificationManager = .shared) {
+        notifications = Array(notificationManager.mockNotifications().prefix(2))
+    }
 }

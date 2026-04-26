@@ -34,8 +34,30 @@ struct BookingsView: View {
                     }
                 }
 
-                PrimaryButton(title: "Manage Reservation", systemImage: "calendar.badge.clock") { }
-                    .accessibilityLabel("Manage reservation")
+                NavigationLink {
+                    BookingManagementView(
+                        viewModel: BookingManagementViewModel(
+                            upcomingBookings: viewModel.upcomingBookings,
+                            bookedExperiences: viewModel.bookedExperiences
+                        )
+                    )
+                } label: {
+                    Text("Manage Reservation")
+                        .font(AppTypography.button)
+                        .foregroundStyle(Color.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(minHeight: AppSpacing.minimumTouchTarget)
+                        .padding(.horizontal, AppSpacing.large)
+                        .background(AppColors.brandBrown)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: AppSpacing.buttonCornerRadius)
+                                .stroke(AppColors.accentGoldSoft, lineWidth: 1)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: AppSpacing.buttonCornerRadius, style: .continuous))
+                        .shadow(color: AppColors.shadow, radius: 12, y: 6)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Manage reservation")
             }
             .padding(.horizontal, AppSpacing.screenPadding)
             .padding(.vertical, AppSpacing.large)
@@ -51,4 +73,3 @@ struct BookingsView: View {
         BookingsView()
     }
 }
-

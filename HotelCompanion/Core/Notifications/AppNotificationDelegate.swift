@@ -24,5 +24,12 @@ final class AppNotificationDelegate: NSObject, UIApplicationDelegate, UNUserNoti
     ) {
         completionHandler([.banner, .list, .sound])
     }
-}
 
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        completionHandler()
+    }
+}

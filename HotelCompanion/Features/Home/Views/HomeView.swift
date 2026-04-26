@@ -168,50 +168,26 @@ private extension HomeView {
         ) {
             VStack(alignment: .leading, spacing: AppSpacing.medium) {
                 ForEach(viewModel.notifications) { notification in
-                    HStack(alignment: .top, spacing: AppSpacing.medium) {
-                        ZStack {
-                            Circle()
-                                .fill(notification.isUnread ? AppColors.accentGoldSoft.opacity(0.45) : AppColors.surfaceWarm)
-                                .frame(width: 44, height: 44)
-
-                            Image(systemName: notification.systemImage)
-                                .font(.headline)
-                                .foregroundStyle(AppColors.brandBrown)
-                        }
-                        .accessibilityHidden(true)
-
-                        VStack(alignment: .leading, spacing: AppSpacing.xSmall) {
-                            HStack(alignment: .firstTextBaseline, spacing: AppSpacing.small) {
-                                Text(notification.title)
-                                    .font(AppTypography.headline)
-                                    .foregroundStyle(AppColors.primaryText)
-
-                                if notification.isUnread {
-                                    Text("New")
-                                        .font(AppTypography.footnote)
-                                        .foregroundStyle(AppColors.brandBrown)
-                                        .padding(.horizontal, AppSpacing.small)
-                                        .padding(.vertical, AppSpacing.xSmall)
-                                        .background(AppColors.accentGoldSoft.opacity(0.35))
-                                        .clipShape(Capsule())
-                                }
-                            }
-
-                            Text(notification.message)
-                                .font(AppTypography.body)
-                                .foregroundStyle(AppColors.secondaryText)
-                                .fixedSize(horizontal: false, vertical: true)
-
-                            Text(notification.timeLabel)
-                                .font(AppTypography.footnote)
-                                .foregroundStyle(AppColors.secondaryText)
-                        }
-
-                        Spacer(minLength: 0)
-                    }
-                    .padding(.vertical, AppSpacing.xSmall)
-                    .accessibilityElement(children: .combine)
+                    NotificationRowCard(notification: notification)
                 }
+
+                NavigationLink {
+                    NotificationsView()
+                } label: {
+                    HStack(spacing: AppSpacing.small) {
+                        Text("View All Notifications")
+                            .font(AppTypography.bodyEmphasized)
+                            .foregroundStyle(AppColors.brandBrown)
+
+                        Image(systemName: "chevron.right.circle.fill")
+                            .foregroundStyle(AppColors.brandBrown)
+                            .accessibilityHidden(true)
+                    }
+                    .frame(minHeight: AppSpacing.minimumTouchTarget)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("View all notifications")
+                .accessibilityHint("Opens the notifications screen")
             }
         }
     }

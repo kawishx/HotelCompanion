@@ -30,14 +30,17 @@ final class GeofenceManager: NSObject, ObservableObject {
     let geofenceRadius: CLLocationDistance = 180
 
     private let locationManager = CLLocationManager()
-    private let notificationCenter = UNUserNotificationCenter.current()
+    private let notificationManager: NotificationManager
     private let geofenceIdentifier = "com.cinnamoncompanion.hotel.cinnamon-thiya"
+    private var cancellables: Set<AnyCancellable> = []
 
-    override init() {
+    init(notificationManager: NotificationManager = .shared) {
         locationAuthorizationStatus = CLLocationManager.authorizationStatus()
+        self.notificationManager = notificationManager
         super.init()
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+        bindNotificationState()
         refreshNotificationSettings()
         updateStatusMessage()
     }
@@ -75,11 +78,7 @@ final class GeofenceManager: NSObject, ObservableObject {
     }
 
     func requestNotificationPermission() {
-        notificationCenter.requestAuthorization(options: [.alert, .badge, .sound]) { [weak self] _, _ in
-            DispatchQueue.main.async {
-                self?.refreshNotificationSettings()
-            }
-        }
+        notificationManager.requestNotificationPermission()
     }
 
     func requestRequiredPermissions() {
@@ -139,55 +138,21 @@ final class GeofenceManager: NSObject, ObservableObject {
     }
 
     private func refreshNotificationSettings() {
-        notificationCenter.getNotificationSettings { [weak self] settings in
-            DispatchQueue.main.async {
-                self?.notificationAuthorizationStatus = settings.authorizationStatus
-                self?.updateStatusMessage()
-            }
-        }
+        notificationManager.refreshAuthorizationStatus()
     }
 
     private func handleRegionEntry() {
         currentRegionState = .inside
         lastEvent = .didEnterHotel
         statusMessage = "Welcome to Cinnamon Thiya. Check-in assistance is ready."
-        scheduleNotification(
-            title: "Welcome to Cinnamon Thiya",
-            body: "You're at the hotel. Open Cinnamon Companion to complete check-in and view your stay."
-        )
+        notificationManager.scheduleGeofenceWelcomeNotification(hotelName: hotel.name)
     }
 
     private func handleRegionExit() {
         currentRegionState = .outside
         lastEvent = .didExitHotel
         statusMessage = "Leaving the hotel? Concierge and checkout support are ready when you need them."
-        scheduleNotification(
-            title: "Need help before you go?",
-            body: "Open Cinnamon Companion for concierge support, transport help, or a smooth checkout."
-        )
-    }
-
-    private func scheduleNotification(title: String, body: String) {
-        notificationCenter.getNotificationSettings { [weak self] settings in
-            DispatchQueue.main.async {
-                self?.notificationAuthorizationStatus = settings.authorizationStatus
-
-                guard self?.notificationsEnabled == true else { return }
-
-                let content = UNMutableNotificationContent()
-                content.title = title
-                content.body = body
-                content.sound = .default
-
-                let request = UNNotificationRequest(
-                    identifier: UUID().uuidString,
-                    content: content,
-                    trigger: nil
-                )
-
-                self?.notificationCenter.add(request)
-            }
-        }
+        notificationManager.scheduleGeofenceExitNotification(hotelName: hotel.name)
     }
 
     private func updateStatusMessage() {
@@ -216,6 +181,16 @@ final class GeofenceManager: NSObject, ObservableObject {
         @unknown default:
             statusMessage = "Geofence status is unavailable right now."
         }
+    }
+
+    private func bindNotificationState() {
+        notificationManager.$authorizationStatus
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] status in
+                self?.notificationAuthorizationStatus = status
+                self?.updateStatusMessage()
+            }
+            .store(in: &cancellables)
     }
 }
 
