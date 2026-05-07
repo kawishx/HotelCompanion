@@ -42,6 +42,7 @@ struct ExploreNearbyView: View {
         .navigationBarTitleDisplayMode(.large)
         .task {
             locationManager.startUpdatingLocation()
+            await viewModel.loadSavedAttractions()
         }
         .onDisappear {
             locationManager.stopUpdatingLocation()
@@ -57,7 +58,9 @@ struct ExploreNearbyView: View {
                     }
                 },
                 onToggleFavorite: {
-                    viewModel.toggleFavorite(for: attraction)
+                    Task {
+                        await viewModel.toggleFavorite(for: attraction)
+                    }
                 }
             )
             .presentationDetents([.medium, .large])
@@ -72,10 +75,36 @@ private extension ExploreNearbyView {
             title: "Explore Nearby",
             subtitle: "Personalized discovery around \(viewModel.hotel.name)"
         ) {
-            Text("Browse curated attractions around your hotel, switch between map and list, and save favorites for the rest of your stay.")
-                .font(AppTypography.body)
-                .foregroundStyle(AppColors.secondaryText)
-                .fixedSize(horizontal: false, vertical: true)
+            VStack(alignment: .leading, spacing: AppSpacing.medium) {
+                Text("Browse curated attractions around your hotel, switch between map and list, and save favorites for the rest of your stay.")
+                    .font(AppTypography.body)
+                    .foregroundStyle(AppColors.secondaryText)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                if let favoriteMessage = viewModel.favoriteMessage {
+                    Text(favoriteMessage)
+                        .font(AppTypography.footnote)
+                        .foregroundStyle(AppColors.brandBrown)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                NavigationLink {
+                    SavedAttractionsView()
+                } label: {
+                    HStack(spacing: AppSpacing.small) {
+                        Text("View Saved Attractions")
+                            .font(AppTypography.bodyEmphasized)
+                            .foregroundStyle(AppColors.brandBrown)
+
+                        Text("(\(viewModel.savedAttractions.count))")
+                            .font(AppTypography.footnote)
+                            .foregroundStyle(AppColors.secondaryText)
+                    }
+                    .frame(minHeight: AppSpacing.minimumTouchTarget)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("View saved attractions")
+            }
         }
     }
 
@@ -316,4 +345,3 @@ private extension ExploreNearbyView {
         ExploreNearbyView()
     }
 }
-

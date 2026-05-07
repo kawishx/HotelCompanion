@@ -14,6 +14,7 @@ struct HotelCompanionApp: App {
     @StateObject private var geofenceManager = GeofenceManager.shared
 
     init() {
+        FirebaseManager.shared.configure()
         configureAppearance()
     }
 

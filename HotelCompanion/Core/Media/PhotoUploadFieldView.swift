@@ -29,6 +29,27 @@ struct PhotoUploadFieldView: View {
                         .accessibilityLabel("Upload status: \(statusMessage)")
                 }
 
+                if viewModel.isUploading {
+                    VStack(alignment: .leading, spacing: AppSpacing.small) {
+                        ProgressView(value: viewModel.uploadProgress)
+                            .tint(AppColors.brandBrown)
+                            .accessibilityLabel("Upload progress")
+
+                        Text("\(Int((viewModel.uploadProgress * 100).rounded()))% complete")
+                            .font(AppTypography.footnote)
+                            .foregroundStyle(AppColors.secondaryText)
+                    }
+                }
+
+                if let uploadedDownloadURL = viewModel.uploadedDownloadURL {
+                    Text("Stored file URL: \(uploadedDownloadURL.absoluteString)")
+                        .font(AppTypography.footnote)
+                        .foregroundStyle(AppColors.secondaryText)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .textSelection(.enabled)
+                        .accessibilityLabel("Uploaded file URL available")
+                }
+
                 PrimaryButton(
                     title: viewModel.confirmButtonTitle,
                     systemImage: "checkmark.circle.fill"
@@ -38,6 +59,18 @@ struct PhotoUploadFieldView: View {
                 .disabled(!viewModel.canConfirmUpload)
                 .opacity(viewModel.canConfirmUpload ? 1 : 0.6)
                 .accessibilityLabel(viewModel.context.confirmButtonTitle)
+
+                PrimaryButton(
+                    title: viewModel.isUploading ? "Uploading..." : viewModel.context.uploadButtonTitle,
+                    systemImage: "icloud.and.arrow.up.fill"
+                ) {
+                    Task {
+                        _ = await viewModel.uploadConfirmedImage()
+                    }
+                }
+                .disabled(!viewModel.canStartUpload)
+                .opacity(viewModel.canStartUpload ? 1 : 0.6)
+                .accessibilityLabel(viewModel.context.uploadButtonTitle)
             }
         }
         .sheet(isPresented: $viewModel.isPresentingCamera) {
@@ -171,4 +204,3 @@ private extension PhotoUploadFieldView {
         .padding()
         .background(AppColors.backgroundCream)
 }
-

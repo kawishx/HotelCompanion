@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @EnvironmentObject private var authViewModel: AuthViewModel
     @StateObject private var viewModel: SettingsViewModel
 
     init(viewModel: SettingsViewModel = SettingsViewModel()) {
@@ -43,6 +44,39 @@ struct SettingsView: View {
                             .fixedSize(horizontal: false, vertical: true)
                     }
                 }
+
+                SectionCard(
+                    title: authViewModel.sessionTitle,
+                    subtitle: authViewModel.sessionSubtitle
+                ) {
+                    VStack(alignment: .leading, spacing: AppSpacing.medium) {
+                        Text("Biometric login works alongside your active Firebase session. Signing out clears the current session and returns you to the login flow.")
+                            .font(AppTypography.body)
+                            .foregroundStyle(AppColors.secondaryText)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        if let successMessage = authViewModel.lastSuccessMessage {
+                            Text(successMessage)
+                                .font(AppTypography.footnote)
+                                .foregroundStyle(AppColors.brandBrown)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+
+                        if let errorMessage = authViewModel.errorMessage {
+                            Text(errorMessage)
+                                .font(AppTypography.footnote)
+                                .foregroundStyle(.red.opacity(0.85))
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+
+                        if authViewModel.isAuthenticated {
+                            PrimaryButton(title: "Sign Out", systemImage: "rectangle.portrait.and.arrow.right") {
+                                _ = authViewModel.signOut()
+                            }
+                            .accessibilityLabel("Sign out of Cinnamon Companion")
+                        }
+                    }
+                }
             }
             .padding(.horizontal, AppSpacing.screenPadding)
             .padding(.vertical, AppSpacing.large)
@@ -76,5 +110,5 @@ struct SettingsView: View {
     NavigationStack {
         SettingsView()
     }
+    .environmentObject(AuthViewModel())
 }
-

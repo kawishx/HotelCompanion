@@ -27,6 +27,7 @@ struct HomeView: View {
                 recommendationSection
                 quickActionsSection
                 serviceRequestSection
+                conciergeSection
                 upcomingBookingSection
                 notificationsSection
             }
@@ -87,8 +88,31 @@ private extension HomeView {
                         .foregroundStyle(AppColors.secondaryText)
                         .fixedSize(horizontal: false, vertical: true)
 
-                    PrimaryButton(title: "View My Stay", systemImage: "bed.double.fill") { }
-                        .accessibilityLabel("View active stay details")
+                    NavigationLink {
+                        MyStayView()
+                    } label: {
+                        HStack(spacing: AppSpacing.small) {
+                            Image(systemName: "bed.double.fill")
+                                .font(.headline)
+
+                            Text("View My Stay")
+                                .font(AppTypography.button)
+                                .multilineTextAlignment(.center)
+                        }
+                        .foregroundStyle(Color.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(minHeight: AppSpacing.minimumTouchTarget)
+                        .padding(.horizontal, AppSpacing.large)
+                        .background(AppColors.brandBrown)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: AppSpacing.buttonCornerRadius)
+                                .stroke(AppColors.accentGoldSoft, lineWidth: 1)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: AppSpacing.buttonCornerRadius, style: .continuous))
+                        .shadow(color: AppColors.shadow, radius: 12, y: 6)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("View active stay details")
                 }
             }
         }
@@ -190,6 +214,37 @@ private extension HomeView {
                     .font(AppTypography.body)
                     .foregroundStyle(AppColors.secondaryText)
                     .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
+    var conciergeSection: some View {
+        SectionCard(
+            title: "Concierge",
+            subtitle: "Arrange transport, dining, and local experiences"
+        ) {
+            VStack(alignment: .leading, spacing: AppSpacing.medium) {
+                Text("Contact the hotel concierge for reservations, transfers, and special celebration planning.")
+                    .font(AppTypography.body)
+                    .foregroundStyle(AppColors.secondaryText)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                NavigationLink {
+                    ConciergeRequestsView()
+                } label: {
+                    HStack(spacing: AppSpacing.small) {
+                        Text("Open Concierge")
+                            .font(AppTypography.bodyEmphasized)
+                            .foregroundStyle(AppColors.brandBrown)
+
+                        Image(systemName: "chevron.right.circle.fill")
+                            .foregroundStyle(AppColors.brandBrown)
+                            .accessibilityHidden(true)
+                    }
+                    .frame(minHeight: AppSpacing.minimumTouchTarget)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Open concierge requests")
             }
         }
     }

@@ -8,25 +8,17 @@
 import SwiftUI
 
 struct LoginView: View {
+    @EnvironmentObject private var authViewModel: AuthViewModel
     @StateObject private var viewModel: LoginViewModel
     @FocusState private var focusedField: Field?
-
-    let onGuestContinue: () -> Void
-    let onSignIn: () -> Void
 
     private enum Field {
         case email
         case password
     }
 
-    init(
-        viewModel: LoginViewModel = LoginViewModel(),
-        onGuestContinue: @escaping () -> Void,
-        onSignIn: @escaping () -> Void
-    ) {
+    init(viewModel: LoginViewModel = LoginViewModel()) {
         _viewModel = StateObject(wrappedValue: viewModel)
-        self.onGuestContinue = onGuestContinue
-        self.onSignIn = onSignIn
     }
 
     var body: some View {
@@ -53,12 +45,20 @@ struct LoginView: View {
 
     private var heroSection: some View {
         VStack(alignment: .leading, spacing: AppSpacing.medium) {
-            Text("Sign In")
+            Picker("Authentication mode", selection: $viewModel.mode) {
+                ForEach(LoginMode.allCases) { mode in
+                    Text(mode.title).tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+            .accessibilityLabel("Authentication mode")
+
+            Text(viewModel.heroTitle)
                 .font(AppTypography.display)
                 .foregroundStyle(AppColors.primaryText)
                 .accessibilityAddTraits(.isHeader)
 
-            Text("Access your stay details, dining requests, and personalized travel moments.")
+            Text(viewModel.heroSubtitle)
                 .font(AppTypography.body)
                 .foregroundStyle(AppColors.secondaryText)
                 .fixedSize(horizontal: false, vertical: true)
@@ -100,23 +100,48 @@ struct LoginView: View {
                         .accessibilityLabel("Password")
                         .onSubmit {
                             if viewModel.canSignIn {
-                                onSignIn()
+                                submitAuthentication()
                             }
                         }
                 }
 
-                Button("Forgot Password?") {
+                if viewModel.mode == .signIn {
+                    Button("Forgot Password?") {
+                    }
+                    .font(AppTypography.bodyEmphasized)
+                    .foregroundStyle(AppColors.brandBrown)
+                    .frame(minHeight: AppSpacing.minimumTouchTarget, alignment: .leading)
+                    .accessibilityHint("Opens password recovery when connected to your authentication service")
                 }
-                .font(AppTypography.bodyEmphasized)
-                .foregroundStyle(AppColors.brandBrown)
-                .frame(minHeight: AppSpacing.minimumTouchTarget, alignment: .leading)
-                .accessibilityHint("Opens password recovery when connected to your authentication service")
             }
         }
     }
 
     private var actionsSection: some View {
         VStack(spacing: AppSpacing.large) {
+            if authViewModel.isLoading {
+                ProgressView("Authenticating...")
+                    .tint(AppColors.brandBrown)
+                    .font(AppTypography.body)
+                    .accessibilityLabel("Authentication in progress")
+            }
+
+            if let successMessage = authViewModel.lastSuccessMessage {
+                Text(successMessage)
+                    .font(AppTypography.footnote)
+                    .foregroundStyle(AppColors.brandBrown)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityLabel("Authentication status: \(successMessage)")
+            }
+
+            if let errorMessage = authViewModel.errorMessage {
+                Text(errorMessage)
+                    .font(AppTypography.footnote)
+                    .foregroundStyle(.red.opacity(0.85))
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityLabel("Authentication error: \(errorMessage)")
+            }
+
             if let biometricErrorMessage = viewModel.biometricErrorMessage {
                 Text(biometricErrorMessage)
                     .font(AppTypography.footnote)
@@ -125,20 +150,17 @@ struct LoginView: View {
                     .accessibilityLabel("Biometric sign in message: \(biometricErrorMessage)")
             }
 
-            PrimaryButton(title: "Sign In", systemImage: "arrow.right.circle.fill") {
-                onSignIn()
+            PrimaryButton(title: viewModel.primaryActionTitle, systemImage: viewModel.primaryActionSystemImage) {
+                submitAuthentication()
             }
-            .disabled(!viewModel.canSignIn)
-            .opacity(viewModel.canSignIn ? 1 : 0.55)
-            .accessibilityLabel("Sign in to Cinnamon Companion")
+            .disabled(!viewModel.canSignIn || authViewModel.isLoading)
+            .opacity(viewModel.canSignIn && !authViewModel.isLoading ? 1 : 0.55)
+            .accessibilityLabel("\(viewModel.primaryActionTitle) with email and password")
 
             if viewModel.shouldShowBiometricButton {
                 Button {
                     Task {
-                        let didAuthenticate = await viewModel.authenticateWithBiometrics()
-                        if didAuthenticate {
-                            onSignIn()
-                        }
+                        _ = await viewModel.authenticateWithBiometrics(using: authViewModel)
                     }
                 } label: {
                     HStack(spacing: AppSpacing.small) {
@@ -161,10 +183,13 @@ struct LoginView: View {
                 .buttonStyle(.plain)
                 .accessibilityLabel(viewModel.biometricButtonTitle)
                 .accessibilityHint("Signs in with biometric authentication")
+                .disabled(authViewModel.isLoading)
             }
 
             Button {
-                onGuestContinue()
+                Task {
+                    _ = await authViewModel.continueAsGuest()
+                }
             } label: {
                 Text("Continue as Guest")
                     .font(AppTypography.bodyEmphasized)
@@ -177,11 +202,49 @@ struct LoginView: View {
             .buttonStyle(.plain)
             .accessibilityLabel("Continue as guest")
             .accessibilityHint("Enter the app without signing in")
+            .disabled(authViewModel.isLoading)
+            .opacity(authViewModel.isLoading ? 0.55 : 1)
+
+            HStack(spacing: AppSpacing.small) {
+                Text(viewModel.mode.switchPrompt)
+                    .font(AppTypography.body)
+                    .foregroundStyle(AppColors.secondaryText)
+
+                Button(viewModel.mode.switchActionTitle) {
+                    authViewModel.clearTransientMessages()
+                    viewModel.toggleMode()
+                }
+                .font(AppTypography.bodyEmphasized)
+                .foregroundStyle(AppColors.brandBrown)
+                .frame(minHeight: AppSpacing.minimumTouchTarget)
+                .accessibilityHint("Switches authentication mode")
+            }
+            .frame(maxWidth: .infinity)
+        }
+    }
+
+    private func submitAuthentication() {
+        authViewModel.clearTransientMessages()
+        viewModel.biometricErrorMessage = nil
+
+        Task {
+            switch viewModel.mode {
+            case .signIn:
+                _ = await authViewModel.signIn(
+                    email: viewModel.email,
+                    password: viewModel.password
+                )
+            case .signUp:
+                _ = await authViewModel.signUp(
+                    email: viewModel.email,
+                    password: viewModel.password
+                )
+            }
         }
     }
 }
 
 #Preview {
-    LoginView(onGuestContinue: { }, onSignIn: { })
+    LoginView()
+        .environmentObject(AuthViewModel())
 }
-

@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct BookingsView: View {
-    @StateObject private var viewModel: BookingsViewModel
+    @StateObject private var viewModel: BookingViewModel
 
-    init(viewModel: BookingsViewModel = BookingsViewModel()) {
+    init(viewModel: BookingViewModel = BookingViewModel()) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
 
@@ -21,45 +21,76 @@ struct BookingsView: View {
                     title: "Bookings",
                     subtitle: "Reservations, room upgrades, and transport in one place"
                 ) {
-                    Text("Your reservations layer is ready for future synchronization with booking systems and authenticated guest records.")
+                    Text("Your experience and stay bookings now flow through a Firestore-ready reservation layer.")
                         .font(AppTypography.body)
                         .foregroundStyle(AppColors.secondaryText)
                 }
 
-                ForEach(viewModel.upcomingBookings) { booking in
-                    SectionCard(title: booking.title, subtitle: booking.propertyName) {
-                        VStack(alignment: .leading, spacing: AppSpacing.medium) {
-                            Text(booking.detail)
+                if viewModel.isLoading {
+                    SectionCard(title: "Loading Bookings", subtitle: "Syncing your reservation history") {
+                        HStack(spacing: AppSpacing.medium) {
+                            ProgressView()
+                                .tint(AppColors.brandBrown)
+
+                            Text("Your bookings are being prepared.")
                                 .font(AppTypography.body)
                                 .foregroundStyle(AppColors.secondaryText)
+                        }
+                        .frame(minHeight: AppSpacing.minimumTouchTarget)
+                    }
+                } else if let errorMessage = viewModel.errorMessage {
+                    SectionCard(title: "Unable to Load Bookings", subtitle: "Please try again in a moment") {
+                        VStack(alignment: .leading, spacing: AppSpacing.medium) {
+                            Text(errorMessage)
+                                .font(AppTypography.body)
+                                .foregroundStyle(AppColors.secondaryText)
+                                .fixedSize(horizontal: false, vertical: true)
 
-                            NavigationLink {
-                                BookingConfirmationView(booking: booking)
-                            } label: {
-                                HStack(spacing: AppSpacing.small) {
-                                    Text("View Booking QR Pass")
-                                        .font(AppTypography.bodyEmphasized)
-                                        .foregroundStyle(AppColors.brandBrown)
-
-                                    Image(systemName: "qrcode")
-                                        .foregroundStyle(AppColors.brandBrown)
-                                        .accessibilityHidden(true)
+                            PrimaryButton(title: "Retry", systemImage: "arrow.clockwise") {
+                                Task {
+                                    await viewModel.loadBookings()
                                 }
-                                .frame(minHeight: AppSpacing.minimumTouchTarget)
                             }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel("View QR pass for \(booking.title)")
+                        }
+                    }
+                } else if viewModel.isEmpty {
+                    SectionCard(title: "No Current Bookings", subtitle: "Your confirmed reservations will appear here") {
+                        Text("Once you reserve an experience or a stay, booking details and QR access will be shown in this space.")
+                            .font(AppTypography.body)
+                            .foregroundStyle(AppColors.secondaryText)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                } else {
+                    ForEach(viewModel.upcomingBookings) { booking in
+                        SectionCard(title: booking.title, subtitle: booking.propertyName) {
+                            VStack(alignment: .leading, spacing: AppSpacing.medium) {
+                                Text(booking.detail)
+                                    .font(AppTypography.body)
+                                    .foregroundStyle(AppColors.secondaryText)
+
+                                NavigationLink {
+                                    BookingConfirmationView(booking: booking)
+                                } label: {
+                                    HStack(spacing: AppSpacing.small) {
+                                        Text("View Booking QR Pass")
+                                            .font(AppTypography.bodyEmphasized)
+                                            .foregroundStyle(AppColors.brandBrown)
+
+                                        Image(systemName: "qrcode")
+                                            .foregroundStyle(AppColors.brandBrown)
+                                            .accessibilityHidden(true)
+                                    }
+                                    .frame(minHeight: AppSpacing.minimumTouchTarget)
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel("View QR pass for \(booking.title)")
+                            }
                         }
                     }
                 }
 
                 NavigationLink {
-                    BookingManagementView(
-                        viewModel: BookingManagementViewModel(
-                            upcomingBookings: viewModel.upcomingBookings,
-                            bookedExperiences: viewModel.bookedExperiences
-                        )
-                    )
+                    BookingManagementView()
                 } label: {
                     Text("Manage Reservation")
                         .font(AppTypography.button)
@@ -84,6 +115,14 @@ struct BookingsView: View {
         .background(AppColors.backgroundCream.ignoresSafeArea())
         .navigationTitle("Bookings")
         .navigationBarTitleDisplayMode(.large)
+        .onAppear {
+            Task {
+                await viewModel.loadBookings()
+            }
+        }
+        .refreshable {
+            await viewModel.loadBookings()
+        }
     }
 }
 

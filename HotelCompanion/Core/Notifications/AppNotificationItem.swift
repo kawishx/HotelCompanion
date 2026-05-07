@@ -12,6 +12,8 @@ enum AppNotificationCategory: String {
     case foodOrder
     case geofence
     case service
+    case concierge
+    case billing
     case general
 
     var title: String {
@@ -24,6 +26,10 @@ enum AppNotificationCategory: String {
             return "Arrival & Exit"
         case .service:
             return "Service"
+        case .concierge:
+            return "Concierge"
+        case .billing:
+            return "Billing"
         case .general:
             return "General"
         }
@@ -39,6 +45,10 @@ enum AppNotificationCategory: String {
             return "location.circle.fill"
         case .service:
             return "bell.badge.fill"
+        case .concierge:
+            return "message.circle.fill"
+        case .billing:
+            return "creditcard.circle.fill"
         case .general:
             return "bell.fill"
         }
@@ -46,11 +56,26 @@ enum AppNotificationCategory: String {
 }
 
 struct AppNotificationItem: Identifiable {
-    let id = UUID()
+    let id: String
     let title: String
     let message: String
     let timeLabel: String
     let category: AppNotificationCategory
     let isUnread: Bool
-}
 
+    init(
+        id: String = UUID().uuidString,
+        title: String,
+        message: String,
+        timeLabel: String,
+        category: AppNotificationCategory,
+        isUnread: Bool
+    ) {
+        self.id = id
+        self.title = title
+        self.message = message
+        self.timeLabel = timeLabel
+        self.category = category
+        self.isUnread = isUnread
+    }
+}

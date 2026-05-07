@@ -65,3 +65,35 @@ struct Attraction: Identifiable, Equatable {
         URL(string: imageURLString)
     }
 }
+
+extension AttractionCategory {
+    var favoriteCategory: FavoriteAttractionCategory {
+        switch self {
+        case .beaches:
+            return .beach
+        case .restaurants:
+            return .restaurant
+        case .touristSpots:
+            return .touristSpot
+        case .shopping:
+            return .shopping
+        }
+    }
+}
+
+extension FavoriteAttractionCategory {
+    var attractionCategory: AttractionCategory {
+        switch self {
+        case .beach:
+            return .beaches
+        case .restaurant:
+            return .restaurants
+        case .touristSpot:
+            return .touristSpots
+        case .shopping:
+            return .shopping
+        case .other:
+            return .touristSpots
+        }
+    }
+}

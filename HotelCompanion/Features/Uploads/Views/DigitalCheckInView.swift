@@ -17,10 +17,20 @@ struct DigitalCheckInView: View {
                     title: "Digital Check-In",
                     subtitle: "Fast arrival preparation"
                 ) {
-                    Text("Upload a clear photo of your passport or national ID to speed up arrival processing before you reach the hotel.")
-                        .font(AppTypography.body)
-                        .foregroundStyle(AppColors.secondaryText)
-                        .fixedSize(horizontal: false, vertical: true)
+                    VStack(alignment: .leading, spacing: AppSpacing.medium) {
+                        Text("Upload a clear photo of your passport or national ID to speed up arrival processing before you reach the hotel.")
+                            .font(AppTypography.body)
+                            .foregroundStyle(AppColors.secondaryText)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        if let uploadedURL = uploadViewModel.uploadedDownloadURL {
+                            Text("Firestore should store this secure document URL under a future check-in field such as `idDocumentImageURL`: \(uploadedURL.absoluteString)")
+                                .font(AppTypography.footnote)
+                                .foregroundStyle(AppColors.brandBrown)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .textSelection(.enabled)
+                        }
+                    }
                 }
 
                 PhotoUploadFieldView(viewModel: uploadViewModel)
@@ -39,4 +49,3 @@ struct DigitalCheckInView: View {
         DigitalCheckInView()
     }
 }
-

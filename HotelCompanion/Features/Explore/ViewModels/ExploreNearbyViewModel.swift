@@ -5,15 +5,17 @@
 //  File: Features/Explore/ViewModels/ExploreNearbyViewModel.swift
 //
 
-import Combine
 import CoreLocation
 import Foundation
 import MapKit
 
+@MainActor
 final class ExploreNearbyViewModel: ObservableObject {
     @Published var selectedCategory: AttractionCategory?
     @Published var selectedAttraction: Attraction?
     @Published private(set) var favoriteAttractionIDs: Set<UUID> = []
+    @Published private(set) var isLoadingFavorites = false
+    @Published private(set) var favoriteMessage: String?
 
     let hotel = HotelLocation(
         name: "Cinnamon Thiya",
@@ -24,6 +26,7 @@ final class ExploreNearbyViewModel: ObservableObject {
 
     let attractions: [Attraction] = [
         Attraction(
+            id: UUID(uuidString: "6B495F87-0A22-442D-9ED9-4A22D0A10001")!,
             title: "Galle Face Green",
             category: .beaches,
             latitude: 6.9272,
@@ -32,6 +35,7 @@ final class ExploreNearbyViewModel: ObservableObject {
             imageURLString: "https://picsum.photos/id/1011/1200/800"
         ),
         Attraction(
+            id: UUID(uuidString: "6B495F87-0A22-442D-9ED9-4A22D0A10002")!,
             title: "Ministry of Crab",
             category: .restaurants,
             latitude: 6.9344,
@@ -40,6 +44,7 @@ final class ExploreNearbyViewModel: ObservableObject {
             imageURLString: "https://picsum.photos/id/1080/1200/800"
         ),
         Attraction(
+            id: UUID(uuidString: "6B495F87-0A22-442D-9ED9-4A22D0A10003")!,
             title: "Gangaramaya Temple",
             category: .touristSpots,
             latitude: 6.9167,
@@ -48,6 +53,7 @@ final class ExploreNearbyViewModel: ObservableObject {
             imageURLString: "https://picsum.photos/id/1040/1200/800"
         ),
         Attraction(
+            id: UUID(uuidString: "6B495F87-0A22-442D-9ED9-4A22D0A10004")!,
             title: "Crescat Boulevard",
             category: .shopping,
             latitude: 6.9211,
@@ -56,6 +62,7 @@ final class ExploreNearbyViewModel: ObservableObject {
             imageURLString: "https://picsum.photos/id/1060/1200/800"
         ),
         Attraction(
+            id: UUID(uuidString: "6B495F87-0A22-442D-9ED9-4A22D0A10005")!,
             title: "Mount Lavinia Beach",
             category: .beaches,
             latitude: 6.8389,
@@ -64,6 +71,7 @@ final class ExploreNearbyViewModel: ObservableObject {
             imageURLString: "https://picsum.photos/id/1015/1200/800"
         ),
         Attraction(
+            id: UUID(uuidString: "6B495F87-0A22-442D-9ED9-4A22D0A10006")!,
             title: "Dutch Hospital Precinct",
             category: .touristSpots,
             latitude: 6.9350,
@@ -72,6 +80,7 @@ final class ExploreNearbyViewModel: ObservableObject {
             imageURLString: "https://picsum.photos/id/1035/1200/800"
         ),
         Attraction(
+            id: UUID(uuidString: "6B495F87-0A22-442D-9ED9-4A22D0A10007")!,
             title: "Park Street Mews",
             category: .restaurants,
             latitude: 6.9151,
@@ -80,6 +89,7 @@ final class ExploreNearbyViewModel: ObservableObject {
             imageURLString: "https://picsum.photos/id/292/1200/800"
         ),
         Attraction(
+            id: UUID(uuidString: "6B495F87-0A22-442D-9ED9-4A22D0A10008")!,
             title: "One Galle Face",
             category: .shopping,
             latitude: 6.9286,
@@ -89,9 +99,25 @@ final class ExploreNearbyViewModel: ObservableObject {
         )
     ]
 
+    private let savedAttractionsService: SavedAttractionsServicing
+    private let authService: AuthServicing
+    private var savedRecordsByAttractionID: [UUID: SavedAttractionRecord] = [:]
+
+    init(
+        savedAttractionsService: SavedAttractionsServicing = SavedAttractionsService.shared,
+        authService: AuthServicing = AuthService.shared
+    ) {
+        self.savedAttractionsService = savedAttractionsService
+        self.authService = authService
+    }
+
     var filteredAttractions: [Attraction] {
         guard let selectedCategory else { return attractions }
         return attractions.filter { $0.category == selectedCategory }
+    }
+
+    var savedAttractions: [Attraction] {
+        attractions.filter { favoriteAttractionIDs.contains($0.id) }
     }
 
     var hotelRegion: MKCoordinateRegion {
@@ -99,6 +125,25 @@ final class ExploreNearbyViewModel: ObservableObject {
             center: hotel.coordinate,
             span: MKCoordinateSpan(latitudeDelta: 0.12, longitudeDelta: 0.12)
         )
+    }
+
+    func loadSavedAttractions() async {
+        isLoadingFavorites = true
+        defer { isLoadingFavorites = false }
+
+        do {
+            let records = try await savedAttractionsService.fetchCurrentUserSavedAttractions()
+            savedRecordsByAttractionID = Dictionary(uniqueKeysWithValues: records.compactMap { record in
+                guard let id = UUID(uuidString: record.attraction.attractionID ?? record.id) else {
+                    return nil
+                }
+
+                return (id, record)
+            })
+            favoriteAttractionIDs = Set(savedRecordsByAttractionID.keys)
+        } catch {
+            favoriteMessage = error.localizedDescription
+        }
     }
 
     func selectCategory(_ category: AttractionCategory?) {
@@ -109,11 +154,22 @@ final class ExploreNearbyViewModel: ObservableObject {
         selectedAttraction = attraction
     }
 
-    func toggleFavorite(for attraction: Attraction) {
-        if favoriteAttractionIDs.contains(attraction.id) {
-            favoriteAttractionIDs.remove(attraction.id)
-        } else {
-            favoriteAttractionIDs.insert(attraction.id)
+    func toggleFavorite(for attraction: Attraction) async {
+        do {
+            if let record = savedRecordsByAttractionID[attraction.id] {
+                try await savedAttractionsService.removeSavedAttraction(record)
+                savedRecordsByAttractionID.removeValue(forKey: attraction.id)
+                favoriteAttractionIDs.remove(attraction.id)
+                favoriteMessage = "\(attraction.title) was removed from your saved places."
+            } else {
+                let record = makeSavedRecord(for: attraction)
+                let saved = try await savedAttractionsService.saveAttraction(record)
+                savedRecordsByAttractionID[attraction.id] = saved
+                favoriteAttractionIDs.insert(attraction.id)
+                favoriteMessage = "\(attraction.title) was saved to your favorites."
+            }
+        } catch {
+            favoriteMessage = error.localizedDescription
         }
     }
 
@@ -152,3 +208,31 @@ final class ExploreNearbyViewModel: ObservableObject {
     }
 }
 
+private extension ExploreNearbyViewModel {
+    func makeSavedRecord(for attraction: Attraction) -> SavedAttractionRecord {
+        let session = authService.currentSession ?? .guest
+        let now = Date()
+
+        return SavedAttractionRecord(
+            id: attraction.id.uuidString,
+            userID: session.id,
+            hotelID: "cinnamon-thiya",
+            attraction: AttractionSnapshot(
+                attractionID: attraction.id.uuidString,
+                title: attraction.title,
+                category: attraction.category.favoriteCategory,
+                shortLocationName: hotel.name,
+                distanceMeters: nil,
+                imageURL: attraction.imageURL,
+                coordinate: GeoCoordinateSnapshot(
+                    latitude: attraction.latitude,
+                    longitude: attraction.longitude
+                )
+            ),
+            notes: nil,
+            savedAt: now,
+            createdAt: now,
+            updatedAt: now
+        )
+    }
+}
