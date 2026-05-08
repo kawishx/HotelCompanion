@@ -68,7 +68,7 @@ final class NotificationManager: ObservableObject {
                 content.sound = .default
                 content.userInfo = userInfo
 
-                let safeTimeInterval = max(1, timeInterval)
+                let safeTimeInterval = NotificationContentFactory.sanitizedTimeInterval(timeInterval)
                 let trigger = UNTimeIntervalNotificationTrigger(timeInterval: safeTimeInterval, repeats: false)
                 let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
 
@@ -77,17 +77,27 @@ final class NotificationManager: ObservableObject {
         }
     }
 
+    func scheduleLocalNotification(_ payload: LocalNotificationPayload) {
+        scheduleLocalNotification(
+            identifier: payload.identifier,
+            title: payload.title,
+            body: payload.body,
+            timeInterval: payload.timeInterval,
+            userInfo: payload.userInfo
+        )
+    }
+
     func scheduleBookingReminderNotification(
         bookingTitle: String,
         reminderBody: String,
         timeInterval: TimeInterval = 5
     ) {
         scheduleLocalNotification(
-            identifier: "booking-reminder-\(UUID().uuidString)",
-            title: "Booking Reminder",
-            body: "\(bookingTitle): \(reminderBody)",
-            timeInterval: timeInterval,
-            userInfo: ["type": "bookingReminder"]
+            NotificationContentFactory.bookingReminder(
+                bookingTitle: bookingTitle,
+                reminderBody: reminderBody,
+                timeInterval: timeInterval
+            )
         )
     }
 
@@ -97,32 +107,20 @@ final class NotificationManager: ObservableObject {
         timeInterval: TimeInterval = 3
     ) {
         scheduleLocalNotification(
-            identifier: "food-order-status-\(UUID().uuidString)",
-            title: "Food Order Update",
-            body: "\(orderTitle): \(statusMessage)",
-            timeInterval: timeInterval,
-            userInfo: ["type": "foodOrderStatus"]
+            NotificationContentFactory.foodOrderStatus(
+                orderTitle: orderTitle,
+                statusMessage: statusMessage,
+                timeInterval: timeInterval
+            )
         )
     }
 
     func scheduleGeofenceWelcomeNotification(hotelName: String) {
-        scheduleLocalNotification(
-            identifier: "geofence-welcome-\(UUID().uuidString)",
-            title: "Welcome to \(hotelName)",
-            body: "You're at the hotel. Open Cinnamon Companion to complete check-in and view your stay.",
-            timeInterval: 1,
-            userInfo: ["type": "geofenceWelcome"]
-        )
+        scheduleLocalNotification(NotificationContentFactory.geofenceWelcome(hotelName: hotelName))
     }
 
     func scheduleGeofenceExitNotification(hotelName: String) {
-        scheduleLocalNotification(
-            identifier: "geofence-exit-\(UUID().uuidString)",
-            title: "Need help before you go?",
-            body: "Leaving \(hotelName)? Open Cinnamon Companion for concierge support, transport help, or a smooth checkout.",
-            timeInterval: 1,
-            userInfo: ["type": "geofenceExit"]
-        )
+        scheduleLocalNotification(NotificationContentFactory.geofenceExit(hotelName: hotelName))
     }
 
     func mockNotifications() -> [AppNotificationItem] {

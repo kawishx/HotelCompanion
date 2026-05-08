@@ -23,6 +23,7 @@ struct PrimaryButton: View {
                 Text(title)
                     .font(AppTypography.button)
                     .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .foregroundStyle(Color.white)
             .frame(maxWidth: .infinity)
@@ -37,6 +38,8 @@ struct PrimaryButton: View {
             .shadow(color: AppColors.shadow, radius: 12, y: 6)
         }
         .buttonStyle(.plain)
+        .contentShape(Rectangle())
+        .accessibilityLabel(title)
         .accessibilityHint("Activates \(title.lowercased())")
     }
 }
@@ -46,4 +49,3 @@ struct PrimaryButton: View {
         .padding()
         .background(AppColors.backgroundCream)
 }
-

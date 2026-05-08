@@ -43,9 +43,7 @@ final class BillingSummaryViewModel: ObservableObject {
 
     func amount(for category: String) -> MoneyAmount? {
         guard let summary = currentSummary else { return nil }
-        let filtered = summary.lineItems.filter { $0.category == category }
-        let total = filtered.reduce(0) { $0 + $1.amount.amountMinorUnits }
-        return MoneyAmount(currencyCode: summary.totalAmount.currencyCode, amountMinorUnits: total)
+        return BillingSummaryCalculator.amount(for: category, in: summary)
     }
 
     func formatCurrency(_ amount: MoneyAmount) -> String {

@@ -35,7 +35,7 @@ final class GeofenceManager: NSObject, ObservableObject {
     private var cancellables: Set<AnyCancellable> = []
 
     init(notificationManager: NotificationManager = .shared) {
-        locationAuthorizationStatus = CLLocationManager.authorizationStatus()
+        locationAuthorizationStatus = locationManager.authorizationStatus
         self.notificationManager = notificationManager
         super.init()
         locationManager.delegate = self
@@ -142,45 +142,27 @@ final class GeofenceManager: NSObject, ObservableObject {
     }
 
     private func handleRegionEntry() {
-        currentRegionState = .inside
-        lastEvent = .didEnterHotel
-        statusMessage = "Welcome to Cinnamon Thiya. Check-in assistance is ready."
+        let snapshot = GeofenceStateResolver.snapshot(for: .enteredHotel, hotelName: hotel.name)
+        currentRegionState = snapshot.regionState
+        lastEvent = snapshot.lastEvent
+        statusMessage = snapshot.statusMessage
         notificationManager.scheduleGeofenceWelcomeNotification(hotelName: hotel.name)
     }
 
     private func handleRegionExit() {
-        currentRegionState = .outside
-        lastEvent = .didExitHotel
-        statusMessage = "Leaving the hotel? Concierge and checkout support are ready when you need them."
+        let snapshot = GeofenceStateResolver.snapshot(for: .exitedHotel, hotelName: hotel.name)
+        currentRegionState = snapshot.regionState
+        lastEvent = snapshot.lastEvent
+        statusMessage = snapshot.statusMessage
         notificationManager.scheduleGeofenceExitNotification(hotelName: hotel.name)
     }
 
     private func updateStatusMessage() {
-        switch locationAuthorizationStatus {
-        case .authorizedAlways:
-            if isMonitoringHotelRegion {
-                switch currentRegionState {
-                case .inside:
-                    statusMessage = "You are currently inside the Cinnamon Thiya hotel zone."
-                case .outside:
-                    statusMessage = "Hotel geofencing is active. We'll let you know when you arrive or leave."
-                case .unknown:
-                    statusMessage = "Hotel geofencing is active and waiting for your current region state."
-                @unknown default:
-                    statusMessage = "Hotel geofencing is active."
-                }
-            } else {
-                statusMessage = "Always Location is enabled. Start hotel geofencing whenever you're ready."
-            }
-        case .authorizedWhenInUse:
-            statusMessage = "Upgrade to Always Location to receive hotel arrival and departure alerts."
-        case .notDetermined:
-            statusMessage = "Enable Always Location and notifications for hotel arrival assistance."
-        case .denied, .restricted:
-            statusMessage = "Location permission is off. Enable Always Location in Settings to use hotel geofencing."
-        @unknown default:
-            statusMessage = "Geofence status is unavailable right now."
-        }
+        statusMessage = GeofenceStateResolver.statusMessage(
+            for: locationAuthorizationStatus,
+            isMonitoringHotelRegion: isMonitoringHotelRegion,
+            currentRegionState: currentRegionState
+        )
     }
 
     private func bindNotificationState() {

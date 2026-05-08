@@ -9,6 +9,7 @@ import SwiftUI
 
 @MainActor
 struct DiningView: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @StateObject private var viewModel: DiningViewModel
 
     init(viewModel: DiningViewModel? = nil) {
@@ -33,6 +34,8 @@ struct DiningView: View {
                             diningSummaryPill(title: "Active Orders", value: "\(viewModel.activeOrders.count)")
                         }
                         .accessibilityElement(children: .combine)
+                        .accessibilityLabel("Dining summary")
+                        .accessibilityValue("\(viewModel.cartItemCount) items in cart, \(viewModel.activeOrders.count) active orders")
 
                         if let successMessage = viewModel.successMessage {
                             Text(successMessage)
@@ -68,6 +71,8 @@ struct DiningView: View {
                                 Text("\(menuItem.venueName) • \(viewModel.formatCurrency(menuItem.price))")
                                     .font(AppTypography.footnote)
                                     .foregroundStyle(AppColors.secondaryText)
+                                    .accessibilityLabel("Venue and price")
+                                    .accessibilityValue("\(menuItem.venueName), \(viewModel.formatCurrency(menuItem.price))")
 
                                 Button {
                                     viewModel.clearMessages()
@@ -86,7 +91,9 @@ struct DiningView: View {
                                 }
                                 .buttonStyle(.plain)
                                 .accessibilityLabel("Add \(menuItem.name) to cart")
+                                .accessibilityHint("Adds this item to your current dining order")
                             }
+                            .accessibilityElement(children: .combine)
                         }
                     }
                 }
@@ -104,6 +111,7 @@ struct DiningView: View {
                 .disabled(!viewModel.canPlaceOrder)
                 .opacity(viewModel.canPlaceOrder ? 1 : 0.6)
                 .accessibilityLabel("Place dining order")
+                .accessibilityValue("\(viewModel.cartItemCount) items, total \(viewModel.formatCurrency(viewModel.totalAmount))")
 
                 FoodOrderTrackingView(viewModel: viewModel)
             }
@@ -143,6 +151,9 @@ private extension DiningView {
                 .stroke(AppColors.border, lineWidth: 1)
         )
         .clipShape(RoundedRectangle(cornerRadius: AppSpacing.buttonCornerRadius, style: .continuous))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(title)
+        .accessibilityValue(value)
     }
 }
 

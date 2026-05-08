@@ -9,6 +9,7 @@ import SwiftUI
 
 @MainActor
 struct MyStayView: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @StateObject private var viewModel: MyStayViewModel
 
     init(viewModel: MyStayViewModel? = nil) {
@@ -123,13 +124,13 @@ private extension MyStayView {
             }
 
             SectionCard(title: "Stay Summary", subtitle: viewModel.statusTitle) {
-                VStack(alignment: .leading, spacing: AppSpacing.medium) {
-                    stayMetricRow(title: "Room", value: viewModel.roomDisplay)
-                    stayMetricRow(title: "Booking", value: viewModel.bookingDisplay)
-                    stayMetricRow(title: "Guests", value: viewModel.guestCountDisplay)
+                ViewThatFits(in: .horizontal) {
+                    HStack(alignment: .top, spacing: AppSpacing.medium) {
+                        stayMetricColumn
+                    }
 
-                    if let wingDisplay = viewModel.wingDisplay {
-                        stayMetricRow(title: "Location", value: wingDisplay)
+                    VStack(alignment: .leading, spacing: AppSpacing.medium) {
+                        stayMetricColumn
                     }
                 }
             }
@@ -159,6 +160,19 @@ private extension MyStayView {
         .background(AppColors.surfaceWarm.opacity(0.35))
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         .accessibilityElement(children: .combine)
+        .accessibilityLabel(title)
+        .accessibilityValue(value)
+    }
+
+    @ViewBuilder
+    var stayMetricColumn: some View {
+        stayMetricRow(title: "Room", value: viewModel.roomDisplay)
+        stayMetricRow(title: "Booking", value: viewModel.bookingDisplay)
+        stayMetricRow(title: "Guests", value: viewModel.guestCountDisplay)
+
+        if let wingDisplay = viewModel.wingDisplay {
+            stayMetricRow(title: "Location", value: wingDisplay)
+        }
     }
 }
 

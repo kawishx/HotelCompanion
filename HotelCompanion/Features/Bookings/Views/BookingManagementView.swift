@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 struct BookingManagementView: View {
     @StateObject private var viewModel = BookingViewModel()
     @State private var reschedulingBooking: BookingSummary?
@@ -128,6 +129,8 @@ private extension BookingManagementView {
                             Text("Status: \(booking.status.rawValue.replacingOccurrences(of: "([a-z])([A-Z])", with: "$1 $2", options: .regularExpression).capitalized)")
                                 .font(AppTypography.footnote)
                                 .foregroundStyle(AppColors.secondaryText)
+                                .accessibilityLabel("Booking status")
+                                .accessibilityValue(booking.status.rawValue.replacingOccurrences(of: "([a-z])([A-Z])", with: "$1 $2", options: .regularExpression).capitalized)
 
                             NavigationLink {
                                 QRPassView(booking: booking)
@@ -172,6 +175,8 @@ private extension BookingManagementView {
                             }
                         }
                         .padding(.bottom, AppSpacing.small)
+                        .accessibilityElement(children: .contain)
+                        .accessibilityLabel("\(booking.title), \(booking.detail)")
                     }
                 }
             }
@@ -296,5 +301,6 @@ private extension BookingManagementView {
                 .stroke(AppColors.border, lineWidth: 1)
         )
         .clipShape(RoundedRectangle(cornerRadius: AppSpacing.buttonCornerRadius, style: .continuous))
+        .accessibilityElement(children: .combine)
     }
 }

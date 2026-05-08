@@ -16,8 +16,7 @@ enum AppColors {
     static let accentGold = Color(red: 0.78, green: 0.64, blue: 0.31)
     static let accentGoldSoft = Color(red: 0.89, green: 0.82, blue: 0.65)
     static let primaryText = brandBrownDeep
-    static let secondaryText = Color(red: 0.45, green: 0.36, blue: 0.27)
-    static let border = Color(red: 0.84, green: 0.77, blue: 0.67)
+    static let secondaryText = Color(red: 0.34, green: 0.27, blue: 0.20)
+    static let border = Color(red: 0.74, green: 0.66, blue: 0.56)
     static let shadow = Color.black.opacity(0.08)
 }
-

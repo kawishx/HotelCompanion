@@ -10,6 +10,7 @@ import SwiftUI
 @MainActor
 struct LoginView: View {
     @EnvironmentObject private var authViewModel: AuthViewModel
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @StateObject private var viewModel: LoginViewModel
     @FocusState private var focusedField: Field?
 
@@ -53,6 +54,7 @@ struct LoginView: View {
             }
             .pickerStyle(.segmented)
             .accessibilityLabel("Authentication mode")
+            .accessibilityValue(viewModel.mode.title)
 
             Text(viewModel.heroTitle)
                 .font(AppTypography.display)
@@ -64,6 +66,7 @@ struct LoginView: View {
                 .foregroundStyle(AppColors.secondaryText)
                 .fixedSize(horizontal: false, vertical: true)
         }
+        .accessibilityElement(children: .combine)
     }
 
     private var credentialsSection: some View {
@@ -83,6 +86,8 @@ struct LoginView: View {
                         .submitLabel(.next)
                         .focused($focusedField, equals: .email)
                         .accessibilityLabel("Email address")
+                        .accessibilityValue(viewModel.email.isEmpty ? "Empty" : viewModel.email)
+                        .accessibilityHint("Enter the email address for your Cinnamon Companion account")
                         .onSubmit {
                             focusedField = .password
                         }
@@ -99,6 +104,8 @@ struct LoginView: View {
                         .submitLabel(.go)
                         .focused($focusedField, equals: .password)
                         .accessibilityLabel("Password")
+                        .accessibilityValue(viewModel.password.isEmpty ? "Empty" : "Entered")
+                        .accessibilityHint("Enter your account password")
                         .onSubmit {
                             if viewModel.canSignIn {
                                 submitAuthentication()
@@ -112,6 +119,7 @@ struct LoginView: View {
                     .font(AppTypography.bodyEmphasized)
                     .foregroundStyle(AppColors.brandBrown)
                     .frame(minHeight: AppSpacing.minimumTouchTarget, alignment: .leading)
+                    .contentShape(Rectangle())
                     .accessibilityHint("Opens password recovery when connected to your authentication service")
                 }
             }
@@ -157,6 +165,7 @@ struct LoginView: View {
             .disabled(!viewModel.canSignIn || authViewModel.isLoading)
             .opacity(viewModel.canSignIn && !authViewModel.isLoading ? 1 : 0.55)
             .accessibilityLabel("\(viewModel.primaryActionTitle) with email and password")
+            .accessibilityHint(viewModel.canSignIn ? "Submits your credentials and continues into the app" : "Enter both email and password to continue")
 
             if viewModel.shouldShowBiometricButton {
                 Button {
@@ -206,22 +215,37 @@ struct LoginView: View {
             .disabled(authViewModel.isLoading)
             .opacity(authViewModel.isLoading ? 0.55 : 1)
 
-            HStack(spacing: AppSpacing.small) {
-                Text(viewModel.mode.switchPrompt)
-                    .font(AppTypography.body)
-                    .foregroundStyle(AppColors.secondaryText)
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: AppSpacing.small) {
+                    Text(viewModel.mode.switchPrompt)
+                        .font(AppTypography.body)
+                        .foregroundStyle(AppColors.secondaryText)
 
-                Button(viewModel.mode.switchActionTitle) {
-                    authViewModel.clearTransientMessages()
-                    viewModel.toggleMode()
+                    modeSwitchButton
                 }
-                .font(AppTypography.bodyEmphasized)
-                .foregroundStyle(AppColors.brandBrown)
-                .frame(minHeight: AppSpacing.minimumTouchTarget)
-                .accessibilityHint("Switches authentication mode")
+
+                VStack(alignment: .center, spacing: AppSpacing.xSmall) {
+                    Text(viewModel.mode.switchPrompt)
+                        .font(AppTypography.body)
+                        .foregroundStyle(AppColors.secondaryText)
+
+                    modeSwitchButton
+                }
             }
             .frame(maxWidth: .infinity)
         }
+    }
+
+    private var modeSwitchButton: some View {
+        Button(viewModel.mode.switchActionTitle) {
+            authViewModel.clearTransientMessages()
+            viewModel.toggleMode()
+        }
+        .font(AppTypography.bodyEmphasized)
+        .foregroundStyle(AppColors.brandBrown)
+        .frame(minHeight: AppSpacing.minimumTouchTarget)
+        .contentShape(Rectangle())
+        .accessibilityHint("Switches authentication mode")
     }
 
     private func submitAuthentication() {

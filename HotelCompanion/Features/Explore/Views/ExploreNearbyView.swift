@@ -12,6 +12,7 @@ import UIKit
 
 @MainActor
 struct ExploreNearbyView: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @StateObject private var viewModel: ExploreNearbyViewModel
     @StateObject private var locationManager: LocationManager
     @State private var mapPosition: MapCameraPosition
@@ -86,7 +87,7 @@ private extension ExploreNearbyView {
                     .fixedSize(horizontal: false, vertical: true)
 
                 if let favoriteMessage = viewModel.favoriteMessage {
-                    Text(favoriteMessage)
+                    Label(favoriteMessage, systemImage: "heart.fill")
                         .font(AppTypography.footnote)
                         .foregroundStyle(AppColors.brandBrown)
                         .fixedSize(horizontal: false, vertical: true)
@@ -95,19 +96,32 @@ private extension ExploreNearbyView {
                 NavigationLink {
                     SavedAttractionsView()
                 } label: {
-                    HStack(spacing: AppSpacing.small) {
-                        Text("View Saved Attractions")
-                            .font(AppTypography.bodyEmphasized)
-                            .foregroundStyle(AppColors.brandBrown)
+                    ViewThatFits(in: .horizontal) {
+                        HStack(spacing: AppSpacing.small) {
+                            Text("View Saved Attractions")
+                                .font(AppTypography.bodyEmphasized)
+                                .foregroundStyle(AppColors.brandBrown)
 
-                        Text("(\(viewModel.savedAttractions.count))")
-                            .font(AppTypography.footnote)
-                            .foregroundStyle(AppColors.secondaryText)
+                            Text("(\(viewModel.savedAttractions.count))")
+                                .font(AppTypography.footnote)
+                                .foregroundStyle(AppColors.secondaryText)
+                        }
+
+                        VStack(alignment: .leading, spacing: AppSpacing.xSmall) {
+                            Text("View Saved Attractions")
+                                .font(AppTypography.bodyEmphasized)
+                                .foregroundStyle(AppColors.brandBrown)
+
+                            Text("\(viewModel.savedAttractions.count) saved")
+                                .font(AppTypography.footnote)
+                                .foregroundStyle(AppColors.secondaryText)
+                        }
                     }
                     .frame(minHeight: AppSpacing.minimumTouchTarget)
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("View saved attractions")
+                .accessibilityValue("\(viewModel.savedAttractions.count) saved places")
             }
         }
     }
@@ -170,6 +184,7 @@ private extension ExploreNearbyView {
             )
             .shadow(color: AppColors.shadow, radius: 12, y: 6)
             .accessibilityLabel("Map of nearby attractions and hotel location")
+            .accessibilityHint("Browse hotel and attraction pins. Use the list below for a more detailed accessible summary")
 
             if let currentLocation = locationManager.currentLocation {
                 Button {
@@ -189,6 +204,7 @@ private extension ExploreNearbyView {
                 }
                 .buttonStyle(.plain)
                 .padding(AppSpacing.large)
+                .accessibilityLabel("Center map on my location")
                 .accessibilityHint("Centers the map on your current location")
             }
         }
@@ -265,6 +281,7 @@ private extension ExploreNearbyView {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("\(attraction.title), \(attraction.category.rawValue), \(viewModel.distanceText(for: attraction))")
+                .accessibilityValue(viewModel.isFavorite(attraction) ? "Saved to favorites" : "Not saved")
                 .accessibilityHint("Opens attraction details")
             }
         }
@@ -330,6 +347,9 @@ private extension ExploreNearbyView {
                     action()
                 }
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(title)
+            .accessibilityValue(message)
         }
     }
 

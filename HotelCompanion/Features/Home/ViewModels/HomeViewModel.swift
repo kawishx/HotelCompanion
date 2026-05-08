@@ -40,7 +40,14 @@ final class HomeViewModel: ObservableObject {
     )
     @Published private(set) var notifications: [AppNotificationItem]
 
-    init(notificationManager: NotificationManager = .shared) {
+    init(notificationManager: NotificationManager = .shared, currentDate: Date = Date()) {
+        recommendation = RecommendationEngine.makeRecommendation(
+            for: RecommendationContext(
+                activeStay: activeStay,
+                upcomingBooking: upcomingBooking,
+                currentDate: currentDate
+            )
+        )
         notifications = Array(notificationManager.mockNotifications().prefix(2))
     }
 }

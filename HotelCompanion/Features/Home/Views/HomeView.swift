@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct HomeView: View {
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @StateObject private var viewModel: HomeViewModel
     private let quickActionColumns = [
         GridItem(.flexible(), spacing: AppSpacing.medium),
@@ -87,6 +88,7 @@ private extension HomeView {
                         .font(AppTypography.body)
                         .foregroundStyle(AppColors.secondaryText)
                         .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityLabel("Stay highlight. \(viewModel.activeStay.highlight)")
 
                     NavigationLink {
                         MyStayView()
@@ -113,8 +115,11 @@ private extension HomeView {
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel("View active stay details")
+                    .accessibilityHint("Opens your room, booking, and stay timing details")
                 }
             }
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel("Active stay at \(viewModel.activeStay.hotelName)")
         }
     }
 
@@ -124,33 +129,23 @@ private extension HomeView {
             subtitle: "Tailored for your current itinerary"
         ) {
             VStack(alignment: .leading, spacing: AppSpacing.large) {
-                HStack(alignment: .top, spacing: AppSpacing.medium) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .fill(AppColors.brandBrownDeep)
-                            .frame(width: 56, height: 56)
-
-                        Image(systemName: viewModel.recommendation.systemImage)
-                            .font(.title2)
-                            .foregroundStyle(AppColors.accentGoldSoft)
+                ViewThatFits(in: .horizontal) {
+                    HStack(alignment: .top, spacing: AppSpacing.medium) {
+                        recommendationIcon
+                        recommendationText
                     }
-                    .accessibilityHidden(true)
 
-                    VStack(alignment: .leading, spacing: AppSpacing.small) {
-                        Text(viewModel.recommendation.summary)
-                            .font(AppTypography.headline)
-                            .foregroundStyle(AppColors.primaryText)
-
-                        Text(viewModel.recommendation.detail)
-                            .font(AppTypography.body)
-                            .foregroundStyle(AppColors.secondaryText)
-                            .fixedSize(horizontal: false, vertical: true)
+                    VStack(alignment: .leading, spacing: AppSpacing.medium) {
+                        recommendationIcon
+                        recommendationText
                     }
                 }
 
                 PrimaryButton(title: viewModel.recommendation.actionTitle, systemImage: "sparkles") { }
                     .accessibilityLabel("Book recommended experience")
+                    .accessibilityHint("Starts the recommended experience booking flow")
             }
+            .accessibilityElement(children: .contain)
         }
     }
 
@@ -215,6 +210,9 @@ private extension HomeView {
                     .foregroundStyle(AppColors.secondaryText)
                     .fixedSize(horizontal: false, vertical: true)
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Upcoming booking")
+            .accessibilityValue("\(viewModel.upcomingBooking.title), \(viewModel.upcomingBooking.dateRange)")
         }
     }
 
@@ -296,6 +294,34 @@ private extension HomeView {
         .background(AppColors.surfaceWarm.opacity(0.45))
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         .accessibilityElement(children: .combine)
+        .accessibilityLabel(title)
+        .accessibilityValue(value)
+    }
+
+    var recommendationIcon: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(AppColors.brandBrownDeep)
+                .frame(width: 56, height: 56)
+
+            Image(systemName: viewModel.recommendation.systemImage)
+                .font(.title2)
+                .foregroundStyle(AppColors.accentGoldSoft)
+        }
+        .accessibilityHidden(true)
+    }
+
+    var recommendationText: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.small) {
+            Text(viewModel.recommendation.summary)
+                .font(AppTypography.headline)
+                .foregroundStyle(AppColors.primaryText)
+
+            Text(viewModel.recommendation.detail)
+                .font(AppTypography.body)
+                .foregroundStyle(AppColors.secondaryText)
+                .fixedSize(horizontal: false, vertical: true)
+        }
     }
 }
 

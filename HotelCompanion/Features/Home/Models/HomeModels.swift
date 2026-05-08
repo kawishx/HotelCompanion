@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ActiveStaySummary {
+struct ActiveStaySummary: Equatable {
     let hotelName: String
     let roomType: String
     let dateRange: String
@@ -15,7 +15,7 @@ struct ActiveStaySummary {
     let highlight: String
 }
 
-struct SmartRecommendation {
+struct SmartRecommendation: Equatable {
     let title: String
     let summary: String
     let detail: String
@@ -30,7 +30,7 @@ struct HomeQuickAction: Identifiable {
     let accessibilityLabel: String
 }
 
-struct UpcomingBookingPreview {
+struct UpcomingBookingPreview: Equatable {
     let title: String
     let dateRange: String
     let detail: String

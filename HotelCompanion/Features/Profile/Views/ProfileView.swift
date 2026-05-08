@@ -176,6 +176,9 @@ private extension ProfileView {
                     }
                 }
             }
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel("Guest profile for \(viewModel.memberName)")
+            .accessibilityValue(viewModel.membershipTier)
 
             SectionCard(title: "Guest preferences") {
                 Text(viewModel.preferenceSummary)
@@ -183,6 +186,9 @@ private extension ProfileView {
                     .foregroundStyle(AppColors.primaryText)
                     .fixedSize(horizontal: false, vertical: true)
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Guest preferences")
+            .accessibilityValue(viewModel.preferenceSummary)
         }
     }
 
@@ -202,6 +208,8 @@ private extension ProfileView {
         .background(AppColors.surfaceWarm.opacity(0.35))
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
         .accessibilityElement(children: .combine)
+        .accessibilityLabel(title)
+        .accessibilityValue(value)
     }
 
     func profileNavigationRow<Destination: View>(
