@@ -30,7 +30,7 @@ struct AppFlowView: View {
         }
         .animation(.easeInOut(duration: 0.35), value: viewModel.currentFlow)
         .environmentObject(authViewModel)
-        .onChange(of: authViewModel.userSession) { session in
+        .onChange(of: authViewModel.userSession) { _, session in
             viewModel.handleAuthenticationState(session)
         }
     }

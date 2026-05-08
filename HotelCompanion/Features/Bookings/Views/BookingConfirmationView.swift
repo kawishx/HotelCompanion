@@ -7,11 +7,14 @@
 
 import SwiftUI
 
+@MainActor
 struct BookingConfirmationView: View {
     @StateObject private var viewModel: BookingConfirmationViewModel
 
-    init(booking: BookingSummary) {
-        _viewModel = StateObject(wrappedValue: BookingConfirmationViewModel(booking: booking))
+    init(booking: BookingSummary, viewModel: BookingConfirmationViewModel? = nil) {
+        _viewModel = StateObject(
+            wrappedValue: viewModel ?? BookingConfirmationViewModel(booking: booking)
+        )
     }
 
     var body: some View {
@@ -47,4 +50,3 @@ struct BookingConfirmationView: View {
         .navigationBarTitleDisplayMode(.large)
     }
 }
-

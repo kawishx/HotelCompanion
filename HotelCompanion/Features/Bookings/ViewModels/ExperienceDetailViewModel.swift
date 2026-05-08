@@ -5,6 +5,7 @@
 //  File: Features/Bookings/ViewModels/ExperienceDetailViewModel.swift
 //
 
+import Combine
 import Foundation
 
 @MainActor
@@ -46,8 +47,8 @@ final class ExperienceDetailViewModel: ObservableObject {
         switch result {
         case .success(let message):
             alertItem = CalendarAlertItem(title: "Added to Calendar", message: message)
-        case .failure(let message):
-            alertItem = CalendarAlertItem(title: "Calendar Error", message: message)
+        case .failure(let error):
+            alertItem = CalendarAlertItem(title: "Calendar Error", message: error.localizedDescription)
         }
     }
 

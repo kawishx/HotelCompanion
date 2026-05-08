@@ -16,6 +16,12 @@ protocol HotelContextResolving {
     func resolveCurrentHotelContext(defaultHotelID: String) async -> HotelContext
 }
 
+extension HotelContextResolving {
+    func resolveCurrentHotelContext() async -> HotelContext {
+        await resolveCurrentHotelContext(defaultHotelID: "cinnamon-thiya")
+    }
+}
+
 final class HotelContextResolver: HotelContextResolving {
     static let shared = HotelContextResolver()
 

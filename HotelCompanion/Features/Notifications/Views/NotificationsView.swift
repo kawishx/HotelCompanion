@@ -7,11 +7,12 @@
 
 import SwiftUI
 
+@MainActor
 struct NotificationsView: View {
     @StateObject private var viewModel: NotificationsViewModel
 
-    init(viewModel: NotificationsViewModel = NotificationsViewModel()) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+    init(viewModel: NotificationsViewModel? = nil) {
+        _viewModel = StateObject(wrappedValue: viewModel ?? NotificationsViewModel())
     }
 
     var body: some View {

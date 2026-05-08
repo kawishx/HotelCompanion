@@ -7,14 +7,14 @@
 
 import SwiftUI
 
+@MainActor
 struct ExperienceDetailView: View {
     @StateObject private var viewModel: ExperienceDetailViewModel
 
-    init(
-        experience: ExperienceBooking,
-        viewModelFactory: @escaping (ExperienceBooking) -> ExperienceDetailViewModel = { ExperienceDetailViewModel(experience: $0) }
-    ) {
-        _viewModel = StateObject(wrappedValue: viewModelFactory(experience))
+    init(experience: ExperienceBooking, viewModel: ExperienceDetailViewModel? = nil) {
+        _viewModel = StateObject(
+            wrappedValue: viewModel ?? ExperienceDetailViewModel(experience: experience)
+        )
     }
 
     var body: some View {

@@ -16,8 +16,8 @@ final class SettingsViewModel: ObservableObject {
 
     private let biometricAuthManager: BiometricAuthManager
 
-    init(biometricAuthManager: BiometricAuthManager = .shared) {
-        self.biometricAuthManager = biometricAuthManager
+    init(biometricAuthManager: BiometricAuthManager? = nil) {
+        self.biometricAuthManager = biometricAuthManager ?? .shared
         refresh()
     }
 
@@ -49,4 +49,3 @@ final class SettingsViewModel: ObservableObject {
         }
     }
 }
-

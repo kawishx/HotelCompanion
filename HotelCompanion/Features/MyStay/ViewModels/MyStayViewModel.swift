@@ -5,6 +5,7 @@
 //  File: Features/MyStay/ViewModels/MyStayViewModel.swift
 //
 
+import Combine
 import Foundation
 
 @MainActor
@@ -17,8 +18,8 @@ final class MyStayViewModel: ObservableObject {
     private let dateFormatter: DateIntervalFormatter
     private let timeFormatter: DateFormatter
 
-    init(stayService: StayServicing = StayService.shared) {
-        self.stayService = stayService
+    init(stayService: StayServicing? = nil) {
+        self.stayService = stayService ?? StayService.shared
 
         let dateFormatter = DateIntervalFormatter()
         dateFormatter.dateStyle = .medium

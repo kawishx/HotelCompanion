@@ -7,11 +7,12 @@
 
 import SwiftUI
 
+@MainActor
 struct ProfileView: View {
     @StateObject private var viewModel: ProfileViewModel
 
-    init(viewModel: ProfileViewModel = ProfileViewModel()) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+    init(viewModel: ProfileViewModel? = nil) {
+        _viewModel = StateObject(wrappedValue: viewModel ?? ProfileViewModel())
     }
 
     var body: some View {

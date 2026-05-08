@@ -5,6 +5,7 @@
 //  File: Features/Favorites/ViewModels/SavedAttractionsViewModel.swift
 //
 
+import Combine
 import Foundation
 
 @MainActor
@@ -15,8 +16,8 @@ final class SavedAttractionsViewModel: ObservableObject {
 
     private let savedAttractionsService: SavedAttractionsServicing
 
-    init(savedAttractionsService: SavedAttractionsServicing = SavedAttractionsService.shared) {
-        self.savedAttractionsService = savedAttractionsService
+    init(savedAttractionsService: SavedAttractionsServicing? = nil) {
+        self.savedAttractionsService = savedAttractionsService ?? SavedAttractionsService.shared
     }
 
     var isEmpty: Bool {

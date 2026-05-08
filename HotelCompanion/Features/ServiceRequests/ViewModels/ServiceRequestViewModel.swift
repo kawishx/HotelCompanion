@@ -5,6 +5,7 @@
 //  File: Features/ServiceRequests/ViewModels/ServiceRequestViewModel.swift
 //
 
+import Combine
 import Foundation
 
 @MainActor

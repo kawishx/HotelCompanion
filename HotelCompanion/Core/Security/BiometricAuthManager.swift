@@ -41,6 +41,17 @@ enum BiometricAvailability: Equatable {
     case unavailable(String)
 }
 
+enum BiometricAuthError: LocalizedError, Equatable {
+    case message(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .message(let message):
+            return message
+        }
+    }
+}
+
 final class BiometricAuthManager {
     static let shared = BiometricAuthManager()
 
@@ -102,7 +113,7 @@ final class BiometricAuthManager {
         return .unavailable("Biometric authentication is unavailable.")
     }
 
-    func authenticateUser(reason: String) async -> Result<Void, String> {
+    func authenticateUser(reason: String) async -> Result<Void, BiometricAuthError> {
         let context = LAContext()
         context.localizedCancelTitle = "Use Password Instead"
 
@@ -111,10 +122,10 @@ final class BiometricAuthManager {
 
         guard canEvaluate else {
             if let error {
-                return .failure(userFriendlyMessage(for: error))
+                return .failure(.message(userFriendlyMessage(for: error)))
             }
 
-            return .failure("Biometric authentication is unavailable right now.")
+            return .failure(.message("Biometric authentication is unavailable right now."))
         }
 
         do {
@@ -123,10 +134,10 @@ final class BiometricAuthManager {
                 localizedReason: reason
             )
 
-            return success ? .success(()) : .failure("Authentication could not be completed.")
+            return success ? .success(()) : .failure(.message("Authentication could not be completed."))
         } catch {
             let nsError = error as NSError
-            return .failure(userFriendlyMessage(for: nsError))
+            return .failure(.message(userFriendlyMessage(for: nsError)))
         }
     }
 
@@ -162,4 +173,3 @@ final class BiometricAuthManager {
         }
     }
 }
-

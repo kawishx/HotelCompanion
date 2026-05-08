@@ -7,11 +7,12 @@
 
 import SwiftUI
 
+@MainActor
 struct BookingsView: View {
     @StateObject private var viewModel: BookingViewModel
 
-    init(viewModel: BookingViewModel = BookingViewModel()) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+    init(viewModel: BookingViewModel? = nil) {
+        _viewModel = StateObject(wrappedValue: viewModel ?? BookingViewModel())
     }
 
     var body: some View {

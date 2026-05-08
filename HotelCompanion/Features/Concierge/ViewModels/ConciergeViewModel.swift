@@ -5,6 +5,7 @@
 //  File: Features/Concierge/ViewModels/ConciergeViewModel.swift
 //
 
+import Combine
 import Foundation
 
 @MainActor
@@ -23,8 +24,8 @@ final class ConciergeViewModel: ObservableObject {
 
     private let conciergeRequestService: ConciergeRequestServicing
 
-    init(conciergeRequestService: ConciergeRequestServicing = ConciergeRequestService.shared) {
-        self.conciergeRequestService = conciergeRequestService
+    init(conciergeRequestService: ConciergeRequestServicing? = nil) {
+        self.conciergeRequestService = conciergeRequestService ?? ConciergeRequestService.shared
     }
 
     var canSubmit: Bool {

@@ -16,6 +16,17 @@ struct CalendarEventPayload {
     let location: String?
 }
 
+enum CalendarManagerError: LocalizedError, Equatable {
+    case message(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .message(let message):
+            return message
+        }
+    }
+}
+
 enum CalendarPermissionState: Equatable {
     case authorized
     case denied(String)
@@ -28,6 +39,9 @@ final class CalendarManager {
     static let shared = CalendarManager()
 
     private let eventStore = EKEventStore()
+
+    typealias PermissionResult = Result<Void, CalendarManagerError>
+    typealias EventCreationResult = Result<String, CalendarManagerError>
 
     func currentPermissionState() -> CalendarPermissionState {
         let status = EKEventStore.authorizationStatus(for: .event)
@@ -46,36 +60,36 @@ final class CalendarManager {
         }
     }
 
-    func requestCalendarPermission() async -> Result<Void, String> {
+    func requestCalendarPermission() async -> PermissionResult {
         switch currentPermissionState() {
         case .authorized:
             return .success(())
         case .denied(let message), .restricted(let message), .unknown(let message):
-            return .failure(message)
+            return .failure(.message(message))
         case .notDetermined:
             return await withCheckedContinuation { continuation in
                 eventStore.requestWriteOnlyAccessToEvents { granted, error in
                     if granted {
                         continuation.resume(returning: .success(()))
                     } else if let error {
-                        continuation.resume(returning: .failure(self.userFriendlyMessage(for: error)))
+                        continuation.resume(returning: .failure(.message(self.userFriendlyMessage(for: error))))
                     } else {
-                        continuation.resume(returning: .failure("Calendar access was not granted."))
+                        continuation.resume(returning: .failure(.message("Calendar access was not granted.")))
                     }
                 }
             }
         }
     }
 
-    func createEvent(_ payload: CalendarEventPayload) async -> Result<String, String> {
+    func createEvent(_ payload: CalendarEventPayload) async -> EventCreationResult {
         let permissionResult = await requestCalendarPermission()
 
         switch permissionResult {
-        case .failure(let message):
-            return .failure(message)
+        case .failure(let error):
+            return .failure(error)
         case .success:
             guard let calendar = eventStore.defaultCalendarForNewEvents else {
-                return .failure("No writable calendar is available on this device.")
+                return .failure(.message("No writable calendar is available on this device."))
             }
 
             let event = EKEvent(eventStore: eventStore)
@@ -90,7 +104,7 @@ final class CalendarManager {
                 try eventStore.save(event, span: .thisEvent, commit: true)
                 return .success("Added \"\(payload.title)\" to your calendar.")
             } catch {
-                return .failure(userFriendlyMessage(for: error))
+                return .failure(.message(userFriendlyMessage(for: error)))
             }
         }
     }
@@ -101,7 +115,7 @@ final class CalendarManager {
         endDate: Date,
         notes: String,
         location: String?
-    ) async -> Result<String, String> {
+    ) async -> EventCreationResult {
         let payload = CalendarEventPayload(
             title: title,
             startDate: startDate,
@@ -127,7 +141,7 @@ final class CalendarManager {
                 return "The selected calendar is read-only."
             case .sourceDoesNotAllowEvents:
                 return "This calendar account does not allow new events."
-            case .notAuthorized:
+            case .eventStoreNotAuthorized:
                 return "Calendar access is not authorized."
             default:
                 return "The event could not be saved to Calendar. Please try again."
@@ -137,4 +151,3 @@ final class CalendarManager {
         return "The event could not be saved to Calendar. Please try again."
     }
 }
-

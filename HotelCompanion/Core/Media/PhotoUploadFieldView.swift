@@ -51,7 +51,7 @@ struct PhotoUploadFieldView: View {
                 }
 
                 PrimaryButton(
-                    title: viewModel.confirmButtonTitle,
+                    title: viewModel.context.confirmButtonTitle,
                     systemImage: "checkmark.circle.fill"
                 ) {
                     viewModel.confirmUpload()
@@ -136,19 +136,22 @@ private extension PhotoUploadFieldView {
         )
     }
 
+    @ViewBuilder
     var actionButtons: some View {
+        let hasSelectedImage = viewModel.selectedImage != nil
+
         VStack(spacing: AppSpacing.medium) {
             PhotosPicker(
                 selection: $selectedPhotoItem,
                 matching: .images
             ) {
                 uploadActionLabel(
-                    title: viewModel.selectedImage == nil ? "Choose from Library" : "Replace from Library",
+                    title: hasSelectedImage ? "Replace from Library" : "Choose from Library",
                     systemImage: "photo.on.rectangle"
                 )
             }
             .buttonStyle(.plain)
-            .accessibilityLabel(viewModel.selectedImage == nil ? "Choose image from library" : "Replace image from library")
+            .accessibilityLabel(hasSelectedImage ? "Replace image from library" : "Choose image from library")
 
             Button {
                 Task {
@@ -156,14 +159,14 @@ private extension PhotoUploadFieldView {
                 }
             } label: {
                 uploadActionLabel(
-                    title: viewModel.selectedImage == nil ? "Take Photo" : "Retake with Camera",
+                    title: hasSelectedImage ? "Retake with Camera" : "Take Photo",
                     systemImage: "camera.fill"
                 )
             }
             .buttonStyle(.plain)
-            .accessibilityLabel(viewModel.selectedImage == nil ? "Take photo with camera" : "Retake photo with camera")
+            .accessibilityLabel(hasSelectedImage ? "Retake photo with camera" : "Take photo with camera")
 
-            if viewModel.selectedImage != nil {
+            if hasSelectedImage {
                 Button {
                     viewModel.removeImage()
                     selectedPhotoItem = nil

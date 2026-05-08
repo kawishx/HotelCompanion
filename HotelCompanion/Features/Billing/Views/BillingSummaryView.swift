@@ -7,11 +7,12 @@
 
 import SwiftUI
 
+@MainActor
 struct BillingSummaryView: View {
     @StateObject private var viewModel: BillingSummaryViewModel
 
-    init(viewModel: BillingSummaryViewModel = BillingSummaryViewModel()) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+    init(viewModel: BillingSummaryViewModel? = nil) {
+        _viewModel = StateObject(wrappedValue: viewModel ?? BillingSummaryViewModel())
     }
 
     var body: some View {

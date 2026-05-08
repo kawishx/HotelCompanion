@@ -5,6 +5,7 @@
 //  File: Features/Bookings/ViewModels/QRPassViewModel.swift
 //
 
+import Combine
 import SwiftUI
 
 @MainActor
@@ -14,10 +15,11 @@ final class QRPassViewModel: ObservableObject {
 
     private let qrCodeManager: QRCodeManager
 
-    init(booking: BookingSummary, qrCodeManager: QRCodeManager = .shared) {
+    init(booking: BookingSummary, qrCodeManager: QRCodeManager? = nil) {
+        let resolvedQRCodeManager = qrCodeManager ?? .shared
+
         self.booking = booking
-        self.qrCodeManager = qrCodeManager
-        self.qrImage = qrCodeManager.generateQRCodeImage(from: booking.qrPayload)
+        self.qrCodeManager = resolvedQRCodeManager
+        self.qrImage = resolvedQRCodeManager.generateQRCodeImage(from: booking.qrPayload)
     }
 }
-

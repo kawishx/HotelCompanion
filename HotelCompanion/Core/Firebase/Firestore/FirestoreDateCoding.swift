@@ -17,14 +17,21 @@ enum FirestoreDateCoding {
         return calendar.date(bySetting: .second, value: 0, of: date) ?? date
     }
 
-    #if canImport(FirebaseFirestore)
-    static func requiredTimestamp(_ date: Date) -> Timestamp {
+    static func requiredTimestamp(_ date: Date) -> Any {
+        #if canImport(FirebaseFirestore)
         Timestamp(date: date)
+        #else
+        date.timeIntervalSince1970
+        #endif
     }
 
     static func optionalTimestampValue(_ date: Date?) -> Any {
         if let date {
+            #if canImport(FirebaseFirestore)
             return Timestamp(date: date)
+            #else
+            return date.timeIntervalSince1970
+            #endif
         }
 
         return NSNull()
@@ -32,14 +39,20 @@ enum FirestoreDateCoding {
 
     static func persistedTimestampValue(_ date: Date?) -> Any {
         if let date {
+            #if canImport(FirebaseFirestore)
             return Timestamp(date: date)
+            #else
+            return date.timeIntervalSince1970
+            #endif
         }
 
+        #if canImport(FirebaseFirestore)
         return FieldValue.serverTimestamp()
+        #else
+        return Date().timeIntervalSince1970
+        #endif
     }
-    #endif
 
-    #if canImport(FirebaseFirestore)
     static func preparedBookingData(from booking: BookingRecord) throws -> [String: Any] {
         var data = try FirestoreDocumentMapper.encode(booking)
 
@@ -51,9 +64,7 @@ enum FirestoreDateCoding {
         data.removeValue(forKey: "id")
         return data
     }
-    #endif
 
-    #if canImport(FirebaseFirestore)
     static func preparedServiceRequestData(from request: ServiceRequestRecord) throws -> [String: Any] {
         var data = try FirestoreDocumentMapper.encode(request)
 
@@ -64,9 +75,7 @@ enum FirestoreDateCoding {
         data.removeValue(forKey: "id")
         return data
     }
-    #endif
 
-    #if canImport(FirebaseFirestore)
     static func preparedDiningOrderData(from order: DiningOrderRecord) throws -> [String: Any] {
         var data = try FirestoreDocumentMapper.encode(order)
 
@@ -78,9 +87,7 @@ enum FirestoreDateCoding {
         data.removeValue(forKey: "id")
         return data
     }
-    #endif
 
-    #if canImport(FirebaseFirestore)
     static func preparedConciergeRequestData(from request: ConciergeRequestRecord) throws -> [String: Any] {
         var data = try FirestoreDocumentMapper.encode(request)
 
@@ -91,9 +98,7 @@ enum FirestoreDateCoding {
         data.removeValue(forKey: "id")
         return data
     }
-    #endif
 
-    #if canImport(FirebaseFirestore)
     static func preparedNotificationData(from notification: NotificationRecord) throws -> [String: Any] {
         var data = try FirestoreDocumentMapper.encode(notification)
 
@@ -105,9 +110,7 @@ enum FirestoreDateCoding {
         data.removeValue(forKey: "id")
         return data
     }
-    #endif
 
-    #if canImport(FirebaseFirestore)
     static func preparedActivityTimelineData(from event: ActivityTimelineRecord) throws -> [String: Any] {
         var data = try FirestoreDocumentMapper.encode(event)
 
@@ -117,9 +120,7 @@ enum FirestoreDateCoding {
         data.removeValue(forKey: "id")
         return data
     }
-    #endif
 
-    #if canImport(FirebaseFirestore)
     static func preparedBillingSummaryData(from summary: BillingSummaryRecord) throws -> [String: Any] {
         var data = try FirestoreDocumentMapper.encode(summary)
 
@@ -127,13 +128,16 @@ enum FirestoreDateCoding {
         data["dueAt"] = optionalTimestampValue(summary.dueAt)
         data["createdAt"] = persistedTimestampValue(summary.createdAt)
         data["updatedAt"] = persistedTimestampValue(summary.updatedAt)
+        data["lineItems"] = summary.lineItems.map { lineItem in
+            var lineItemData = (try? FirestoreDocumentMapper.encode(lineItem)) ?? [:]
+            lineItemData["postedAt"] = optionalTimestampValue(lineItem.postedAt)
+            return lineItemData
+        }
 
         data.removeValue(forKey: "id")
         return data
     }
-    #endif
 
-    #if canImport(FirebaseFirestore)
     static func preparedSavedAttractionData(from attraction: SavedAttractionRecord) throws -> [String: Any] {
         var data = try FirestoreDocumentMapper.encode(attraction)
 
@@ -144,5 +148,4 @@ enum FirestoreDateCoding {
         data.removeValue(forKey: "id")
         return data
     }
-    #endif
 }

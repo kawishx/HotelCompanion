@@ -23,11 +23,11 @@ final class NotificationsViewModel: ObservableObject {
     private var notificationRecordsByID: [String: NotificationRecord] = [:]
 
     init(
-        notificationManager: NotificationManager = .shared,
-        notificationFeedService: NotificationFeedServicing = NotificationFeedService.shared
+        notificationManager: NotificationManager? = nil,
+        notificationFeedService: NotificationFeedServicing? = nil
     ) {
-        self.notificationManager = notificationManager
-        self.notificationFeedService = notificationFeedService
+        self.notificationManager = notificationManager ?? .shared
+        self.notificationFeedService = notificationFeedService ?? NotificationFeedService.shared
         bind()
         refresh()
     }

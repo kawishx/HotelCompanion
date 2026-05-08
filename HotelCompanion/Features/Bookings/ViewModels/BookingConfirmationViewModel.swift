@@ -5,6 +5,7 @@
 //  File: Features/Bookings/ViewModels/BookingConfirmationViewModel.swift
 //
 
+import Combine
 import Foundation
 
 @MainActor
@@ -15,4 +16,3 @@ final class BookingConfirmationViewModel: ObservableObject {
         self.booking = booking
     }
 }
-

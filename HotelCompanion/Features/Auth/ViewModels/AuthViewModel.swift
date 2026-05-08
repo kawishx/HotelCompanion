@@ -18,9 +18,11 @@ final class AuthViewModel: ObservableObject {
     private let authService: AuthServicing
     private var cancellables = Set<AnyCancellable>()
 
-    init(authService: AuthServicing = AuthService.shared) {
-        self.authService = authService
-        self.userSession = authService.currentSession
+    init(authService: AuthServicing? = nil) {
+        let resolvedAuthService = authService ?? AuthService.shared
+
+        self.authService = resolvedAuthService
+        self.userSession = resolvedAuthService.currentSession
         bindSessionUpdates()
     }
 

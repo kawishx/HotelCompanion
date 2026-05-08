@@ -7,11 +7,12 @@
 
 import SwiftUI
 
+@MainActor
 struct SavedAttractionsView: View {
     @StateObject private var viewModel: SavedAttractionsViewModel
 
-    init(viewModel: SavedAttractionsViewModel = SavedAttractionsViewModel()) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+    init(viewModel: SavedAttractionsViewModel? = nil) {
+        _viewModel = StateObject(wrappedValue: viewModel ?? SavedAttractionsViewModel())
     }
 
     var body: some View {

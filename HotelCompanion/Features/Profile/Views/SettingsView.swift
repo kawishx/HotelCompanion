@@ -7,12 +7,13 @@
 
 import SwiftUI
 
+@MainActor
 struct SettingsView: View {
     @EnvironmentObject private var authViewModel: AuthViewModel
     @StateObject private var viewModel: SettingsViewModel
 
-    init(viewModel: SettingsViewModel = SettingsViewModel()) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+    init(viewModel: SettingsViewModel? = nil) {
+        _viewModel = StateObject(wrappedValue: viewModel ?? SettingsViewModel())
     }
 
     var body: some View {

@@ -10,6 +10,7 @@ import MapKit
 import SwiftUI
 import UIKit
 
+@MainActor
 struct ExploreNearbyView: View {
     @StateObject private var viewModel: ExploreNearbyViewModel
     @StateObject private var locationManager: LocationManager
@@ -17,12 +18,15 @@ struct ExploreNearbyView: View {
     @Environment(\.openURL) private var openURL
 
     init(
-        viewModel: ExploreNearbyViewModel = ExploreNearbyViewModel(),
-        locationManager: LocationManager = LocationManager()
+        viewModel: ExploreNearbyViewModel? = nil,
+        locationManager: LocationManager? = nil
     ) {
-        _viewModel = StateObject(wrappedValue: viewModel)
-        _locationManager = StateObject(wrappedValue: locationManager)
-        _mapPosition = State(initialValue: .region(viewModel.hotelRegion))
+        let resolvedViewModel = viewModel ?? ExploreNearbyViewModel()
+        let resolvedLocationManager = locationManager ?? LocationManager()
+
+        _viewModel = StateObject(wrappedValue: resolvedViewModel)
+        _locationManager = StateObject(wrappedValue: resolvedLocationManager)
+        _mapPosition = State(initialValue: .region(resolvedViewModel.hotelRegion))
     }
 
     var body: some View {

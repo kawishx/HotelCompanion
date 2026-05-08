@@ -8,12 +8,13 @@
 import SwiftUI
 import UIKit
 
+@MainActor
 struct QRScannerView: View {
     @StateObject private var viewModel: QRScannerViewModel
     @Environment(\.openURL) private var openURL
 
-    init(bookings: [BookingSummary]) {
-        _viewModel = StateObject(wrappedValue: QRScannerViewModel(bookings: bookings))
+    init(bookings: [BookingSummary], viewModel: QRScannerViewModel? = nil) {
+        _viewModel = StateObject(wrappedValue: viewModel ?? QRScannerViewModel(bookings: bookings))
     }
 
     var body: some View {
@@ -203,4 +204,3 @@ struct QRScannerView: View {
         )
     }
 }
-

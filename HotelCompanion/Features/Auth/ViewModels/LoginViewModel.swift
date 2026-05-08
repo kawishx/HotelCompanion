@@ -80,8 +80,10 @@ final class LoginViewModel: ObservableObject {
 
     private let biometricAuthManager: BiometricAuthManager
 
-    init(biometricAuthManager: BiometricAuthManager = .shared) {
-        self.biometricAuthManager = biometricAuthManager
+    init(biometricAuthManager: BiometricAuthManager? = nil) {
+        let resolvedBiometricAuthManager = biometricAuthManager ?? .shared
+
+        self.biometricAuthManager = resolvedBiometricAuthManager
         refreshBiometricState()
     }
 
@@ -156,8 +158,8 @@ final class LoginViewModel: ObservableObject {
             }
 
             return await authViewModel.signIn(email: email, password: password)
-        case .failure(let message):
-            biometricErrorMessage = message
+        case .failure(let error):
+            biometricErrorMessage = error.localizedDescription
             return false
         }
     }

@@ -7,11 +7,12 @@
 
 import SwiftUI
 
+@MainActor
 struct ActivityTimelineView: View {
     @StateObject private var viewModel: ActivityTimelineViewModel
 
-    init(viewModel: ActivityTimelineViewModel = ActivityTimelineViewModel()) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+    init(viewModel: ActivityTimelineViewModel? = nil) {
+        _viewModel = StateObject(wrappedValue: viewModel ?? ActivityTimelineViewModel())
     }
 
     var body: some View {

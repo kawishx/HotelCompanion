@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+@MainActor
 struct LoginView: View {
     @EnvironmentObject private var authViewModel: AuthViewModel
     @StateObject private var viewModel: LoginViewModel
@@ -17,8 +18,8 @@ struct LoginView: View {
         case password
     }
 
-    init(viewModel: LoginViewModel = LoginViewModel()) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+    init(viewModel: LoginViewModel? = nil) {
+        _viewModel = StateObject(wrappedValue: viewModel ?? LoginViewModel())
     }
 
     var body: some View {

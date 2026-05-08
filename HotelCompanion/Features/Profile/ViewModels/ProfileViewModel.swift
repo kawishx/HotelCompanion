@@ -16,8 +16,8 @@ final class ProfileViewModel: ObservableObject {
 
     private let userProfileService: UserProfileServicing
 
-    init(userProfileService: UserProfileServicing = UserProfileService.shared) {
-        self.userProfileService = userProfileService
+    init(userProfileService: UserProfileServicing? = nil) {
+        self.userProfileService = userProfileService ?? UserProfileService.shared
     }
 
     var memberName: String {

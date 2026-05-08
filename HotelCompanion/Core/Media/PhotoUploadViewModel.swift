@@ -5,6 +5,7 @@
 //  File: Core/Media/PhotoUploadViewModel.swift
 //
 
+import Combine
 import AVFoundation
 import PhotosUI
 import SwiftUI

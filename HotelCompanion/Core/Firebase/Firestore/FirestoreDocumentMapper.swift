@@ -28,10 +28,7 @@ enum FirestoreDocumentMapper {
     }
 
     static func encode<T: Encodable>(_ value: T) throws -> [String: Any] {
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .secondsSince1970
-
-        let data = try encoder.encode(value)
+        let data = try configuredEncoder().encode(value)
         let jsonObject = try JSONSerialization.jsonObject(with: data)
 
         guard let dictionary = jsonObject as? [String: Any] else {
@@ -54,6 +51,12 @@ enum FirestoreDocumentMapperError: LocalizedError {
 }
 
 private extension FirestoreDocumentMapper {
+    static func configuredEncoder() -> JSONEncoder {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .secondsSince1970
+        return encoder
+    }
+
     static func normalizeDictionary(_ dictionary: [String: Any]) -> [String: Any] {
         dictionary.mapValues { normalizeValue($0) }
     }
@@ -62,6 +65,17 @@ private extension FirestoreDocumentMapper {
         #if canImport(FirebaseFirestore)
         if let timestamp = value as? Timestamp {
             return timestamp.dateValue().timeIntervalSince1970
+        }
+
+        if let geoPoint = value as? GeoPoint {
+            return [
+                "latitude": geoPoint.latitude,
+                "longitude": geoPoint.longitude
+            ]
+        }
+
+        if let documentReference = value as? DocumentReference {
+            return documentReference.path
         }
         #endif
 
@@ -74,7 +88,9 @@ private extension FirestoreDocumentMapper {
         }
 
         if let nestedArray = value as? [Any] {
-            return nestedArray.map(normalizeValue)
+            return nestedArray.map { item in
+                normalizeValue(item)
+            }
         }
 
         if let url = value as? URL {

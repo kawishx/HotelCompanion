@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		05E6BC832FAE1A1100197FFA /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 05E6BC822FAE1A1100197FFA /* Algorithms */; };
+		05F7C1013A00100100CC1001 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 05F7C1053A00100100CC1001 /* FirebaseCore */; };
+		05F7C1023A00100100CC1001 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 05F7C1063A00100100CC1001 /* FirebaseAuth */; };
+		05F7C1033A00100100CC1001 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 05F7C1073A00100100CC1001 /* FirebaseFirestore */; };
+		05F7C1043A00100100CC1001 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 05F7C1083A00100100CC1001 /* FirebaseStorage */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +32,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				05E6BC832FAE1A1100197FFA /* Algorithms in Frameworks */,
+				05F7C1013A00100100CC1001 /* FirebaseCore in Frameworks */,
+				05F7C1023A00100100CC1001 /* FirebaseAuth in Frameworks */,
+				05F7C1033A00100100CC1001 /* FirebaseFirestore in Frameworks */,
+				05F7C1043A00100100CC1001 /* FirebaseStorage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +79,10 @@
 			name = HotelCompanion;
 			packageProductDependencies = (
 				05E6BC822FAE1A1100197FFA /* Algorithms */,
+				05F7C1053A00100100CC1001 /* FirebaseCore */,
+				05F7C1063A00100100CC1001 /* FirebaseAuth */,
+				05F7C1073A00100100CC1001 /* FirebaseFirestore */,
+				05F7C1083A00100100CC1001 /* FirebaseStorage */,
 			);
 			productName = HotelCompanion;
 			productReference = 05E08E5F2F841B9800934175 /* HotelCompanion.app */;
@@ -261,6 +273,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription = "Cinnamon Companion uses Calendar access to add your booked experiences to your iPhone calendar.";
@@ -297,6 +310,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCalendarsWriteOnlyAccessUsageDescription = "Cinnamon Companion uses Calendar access to add your booked experiences to your iPhone calendar.";
@@ -373,6 +387,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 05E6BC812FAE1A1100197FFA /* XCRemoteSwiftPackageReference "swift-algorithms" */;
 			productName = Algorithms;
+		};
+		05F7C1053A00100100CC1001 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 05E6BC842FAE1AD100197FFA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		05F7C1063A00100100CC1001 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 05E6BC842FAE1AD100197FFA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		05F7C1073A00100100CC1001 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 05E6BC842FAE1AD100197FFA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		05F7C1083A00100100CC1001 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 05E6BC842FAE1AD100197FFA /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

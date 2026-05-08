@@ -7,11 +7,12 @@
 
 import SwiftUI
 
+@MainActor
 struct MyStayView: View {
     @StateObject private var viewModel: MyStayViewModel
 
-    init(viewModel: MyStayViewModel = MyStayViewModel()) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+    init(viewModel: MyStayViewModel? = nil) {
+        _viewModel = StateObject(wrappedValue: viewModel ?? MyStayViewModel())
     }
 
     var body: some View {

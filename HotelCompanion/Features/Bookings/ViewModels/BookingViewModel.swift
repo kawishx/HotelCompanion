@@ -5,6 +5,7 @@
 //  File: Features/Bookings/ViewModels/BookingViewModel.swift
 //
 
+import Combine
 import Foundation
 
 @MainActor
@@ -21,11 +22,11 @@ final class BookingViewModel: ObservableObject {
     private let calendarManager: CalendarManager
 
     init(
-        bookingService: BookingServicing = BookingService.shared,
-        calendarManager: CalendarManager = .shared
+        bookingService: BookingServicing? = nil,
+        calendarManager: CalendarManager? = nil
     ) {
-        self.bookingService = bookingService
-        self.calendarManager = calendarManager
+        self.bookingService = bookingService ?? BookingService.shared
+        self.calendarManager = calendarManager ?? .shared
 
         let calendar = Calendar.current
         let sunsetStart = calendar.date(bySettingHour: 17, minute: 30, second: 0, of: Date()) ?? Date()
@@ -113,8 +114,8 @@ final class BookingViewModel: ObservableObject {
         switch result {
         case .success(let message):
             alertItem = CalendarAlertItem(title: "Added to Calendar", message: message)
-        case .failure(let message):
-            alertItem = CalendarAlertItem(title: "Calendar Error", message: message)
+        case .failure(let error):
+            alertItem = CalendarAlertItem(title: "Calendar Error", message: error.localizedDescription)
         }
     }
 

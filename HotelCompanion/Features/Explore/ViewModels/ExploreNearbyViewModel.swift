@@ -6,6 +6,7 @@
 //
 
 import CoreLocation
+import Combine
 import Foundation
 import MapKit
 
@@ -104,11 +105,11 @@ final class ExploreNearbyViewModel: ObservableObject {
     private var savedRecordsByAttractionID: [UUID: SavedAttractionRecord] = [:]
 
     init(
-        savedAttractionsService: SavedAttractionsServicing = SavedAttractionsService.shared,
-        authService: AuthServicing = AuthService.shared
+        savedAttractionsService: SavedAttractionsServicing? = nil,
+        authService: AuthServicing? = nil
     ) {
-        self.savedAttractionsService = savedAttractionsService
-        self.authService = authService
+        self.savedAttractionsService = savedAttractionsService ?? SavedAttractionsService.shared
+        self.authService = authService ?? AuthService.shared
     }
 
     var filteredAttractions: [Attraction] {

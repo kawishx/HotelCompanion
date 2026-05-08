@@ -7,11 +7,12 @@
 
 import SwiftUI
 
+@MainActor
 struct DiningView: View {
     @StateObject private var viewModel: DiningViewModel
 
-    init(viewModel: DiningViewModel = DiningViewModel()) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+    init(viewModel: DiningViewModel? = nil) {
+        _viewModel = StateObject(wrappedValue: viewModel ?? DiningViewModel())
     }
 
     var body: some View {

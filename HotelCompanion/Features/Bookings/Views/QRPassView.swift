@@ -7,11 +7,12 @@
 
 import SwiftUI
 
+@MainActor
 struct QRPassView: View {
     @StateObject private var viewModel: QRPassViewModel
 
-    init(booking: BookingSummary) {
-        _viewModel = StateObject(wrappedValue: QRPassViewModel(booking: booking))
+    init(booking: BookingSummary, viewModel: QRPassViewModel? = nil) {
+        _viewModel = StateObject(wrappedValue: viewModel ?? QRPassViewModel(booking: booking))
     }
 
     var body: some View {
@@ -95,4 +96,3 @@ struct QRPassView: View {
         )
     }
 }
-

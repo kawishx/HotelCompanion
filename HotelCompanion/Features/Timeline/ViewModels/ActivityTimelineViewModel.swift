@@ -5,6 +5,7 @@
 //  File: Features/Timeline/ViewModels/ActivityTimelineViewModel.swift
 //
 
+import Combine
 import Foundation
 
 @MainActor
@@ -15,8 +16,8 @@ final class ActivityTimelineViewModel: ObservableObject {
 
     private let activityTimelineService: ActivityTimelineServicing
 
-    init(activityTimelineService: ActivityTimelineServicing = ActivityTimelineService.shared) {
-        self.activityTimelineService = activityTimelineService
+    init(activityTimelineService: ActivityTimelineServicing? = nil) {
+        self.activityTimelineService = activityTimelineService ?? ActivityTimelineService.shared
     }
 
     var isEmpty: Bool {

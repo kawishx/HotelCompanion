@@ -5,6 +5,7 @@
 //  File: Features/Billing/ViewModels/BillingSummaryViewModel.swift
 //
 
+import Combine
 import Foundation
 
 @MainActor
@@ -15,8 +16,8 @@ final class BillingSummaryViewModel: ObservableObject {
 
     private let billingSummaryService: BillingSummaryServicing
 
-    init(billingSummaryService: BillingSummaryServicing = BillingSummaryService.shared) {
-        self.billingSummaryService = billingSummaryService
+    init(billingSummaryService: BillingSummaryServicing? = nil) {
+        self.billingSummaryService = billingSummaryService ?? BillingSummaryService.shared
     }
 
     var currentSummary: BillingSummaryRecord? {

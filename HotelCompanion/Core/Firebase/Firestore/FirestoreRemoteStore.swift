@@ -27,6 +27,7 @@ enum FirestoreRemoteStoreError: LocalizedError, Equatable {
     }
 }
 
+@MainActor
 protocol FirestoreRemoteStoring {
     func isAvailable() -> Bool
     func fetchDocument<T: Decodable>(at path: String, as type: T.Type) async throws -> T?
@@ -47,6 +48,7 @@ protocol FirestoreRemoteStoring {
     func deleteDocument(at path: String) async throws
 }
 
+@MainActor
 final class FirestoreRemoteStore: FirestoreRemoteStoring {
     static let shared = FirestoreRemoteStore()
 

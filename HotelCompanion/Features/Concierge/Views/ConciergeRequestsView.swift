@@ -7,11 +7,12 @@
 
 import SwiftUI
 
+@MainActor
 struct ConciergeRequestsView: View {
     @StateObject private var viewModel: ConciergeViewModel
 
-    init(viewModel: ConciergeViewModel = ConciergeViewModel()) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+    init(viewModel: ConciergeViewModel? = nil) {
+        _viewModel = StateObject(wrappedValue: viewModel ?? ConciergeViewModel())
     }
 
     var body: some View {

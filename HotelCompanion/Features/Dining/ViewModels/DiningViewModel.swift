@@ -5,6 +5,7 @@
 //  File: Features/Dining/ViewModels/DiningViewModel.swift
 //
 
+import Combine
 import Foundation
 
 struct DiningMenuItem: Identifiable, Hashable {
@@ -41,8 +42,8 @@ final class DiningViewModel: ObservableObject {
 
     private let diningOrderService: DiningOrderServicing
 
-    init(diningOrderService: DiningOrderServicing = DiningOrderService.shared) {
-        self.diningOrderService = diningOrderService
+    init(diningOrderService: DiningOrderServicing? = nil) {
+        self.diningOrderService = diningOrderService ?? DiningOrderService.shared
         self.menuItems = [
             DiningMenuItem(
                 id: "menu-club-sandwich",

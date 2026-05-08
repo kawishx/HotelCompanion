@@ -7,11 +7,12 @@
 
 import SwiftUI
 
+@MainActor
 struct GeofenceStatusCard: View {
     @StateObject private var viewModel: GeofenceStatusViewModel
 
-    init(viewModel: GeofenceStatusViewModel = GeofenceStatusViewModel()) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+    init(viewModel: GeofenceStatusViewModel? = nil) {
+        _viewModel = StateObject(wrappedValue: viewModel ?? GeofenceStatusViewModel())
     }
 
     var body: some View {
@@ -97,4 +98,3 @@ struct GeofenceStatusCard: View {
         .padding()
         .background(AppColors.backgroundCream)
 }
-
