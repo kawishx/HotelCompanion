@@ -123,40 +123,30 @@ private extension ProfileView {
     var contentSection: some View {
         if viewModel.isLoading {
             SectionCard(title: "Loading Profile", subtitle: "Syncing your guest details") {
-                HStack(spacing: AppSpacing.medium) {
-                    ProgressView()
-                        .tint(AppColors.brandBrown)
-
-                    Text("Your profile is being prepared.")
-                        .font(AppTypography.body)
-                        .foregroundStyle(AppColors.secondaryText)
-                }
-                .frame(minHeight: AppSpacing.minimumTouchTarget)
-                .accessibilityElement(children: .combine)
+                LoadingStateView(
+                    title: "Loading Profile",
+                    message: "Your profile is being prepared.",
+                    systemImage: "person.text.rectangle.fill"
+                )
             }
         } else if let errorMessage = viewModel.errorMessage {
-            SectionCard(title: "Unable to Load Profile", subtitle: "Please try again in a moment") {
-                VStack(alignment: .leading, spacing: AppSpacing.medium) {
-                    Text(errorMessage)
-                        .font(AppTypography.body)
-                        .foregroundStyle(AppColors.secondaryText)
-                        .fixedSize(horizontal: false, vertical: true)
-
-                    PrimaryButton(title: "Retry", systemImage: "arrow.clockwise") {
-                        Task {
-                            await viewModel.loadProfile()
-                        }
+            ErrorStateCard(
+                title: "Unable to Load Profile",
+                subtitle: "Please try again in a moment",
+                message: errorMessage,
+                retryAction: {
+                    Task {
+                        await viewModel.loadProfile()
                     }
-                    .accessibilityLabel("Retry loading profile")
                 }
-            }
+            )
         } else if viewModel.isEmpty {
-            SectionCard(title: "No Synced Profile", subtitle: "Sign in to load your guest details") {
-                Text("Profile details, loyalty information, and synced preferences will appear here after account sign-in and Firestore setup.")
-                    .font(AppTypography.body)
-                    .foregroundStyle(AppColors.secondaryText)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
+            EmptyStateCard(
+                title: "No Synced Profile",
+                subtitle: "Sign in to load your guest details",
+                message: "Profile details, loyalty information, and synced preferences will appear here after account sign-in and Firestore setup.",
+                systemImage: "person.crop.circle.badge.exclamationmark"
+            )
         } else {
             SectionCard(
                 title: viewModel.memberName,
@@ -195,7 +185,7 @@ private extension ProfileView {
     func profileMetric(title: String, value: String) -> some View {
         VStack(alignment: .leading, spacing: AppSpacing.xSmall) {
             Text(title)
-                .font(AppTypography.footnote)
+                .font(AppTypography.sectionSubtitle)
                 .foregroundStyle(AppColors.secondaryText)
 
             Text(value)
@@ -206,7 +196,11 @@ private extension ProfileView {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppSpacing.medium)
         .background(AppColors.surfaceWarm.opacity(0.35))
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppSpacing.chipCornerRadius, style: .continuous)
+                .stroke(AppColors.border.opacity(0.65), lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: AppSpacing.chipCornerRadius, style: .continuous))
         .accessibilityElement(children: .combine)
         .accessibilityLabel(title)
         .accessibilityValue(value)

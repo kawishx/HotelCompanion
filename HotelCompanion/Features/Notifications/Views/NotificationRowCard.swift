@@ -30,13 +30,7 @@ struct NotificationRowCard: View {
                         .foregroundStyle(AppColors.primaryText)
 
                     if notification.isUnread {
-                        Text("New")
-                            .font(AppTypography.footnote)
-                            .foregroundStyle(AppColors.brandBrown)
-                            .padding(.horizontal, AppSpacing.small)
-                            .padding(.vertical, AppSpacing.xSmall)
-                            .background(AppColors.accentGoldSoft.opacity(0.35))
-                            .clipShape(Capsule())
+                        StatusChip(title: "New", tone: .accent, size: .compact)
                     }
                 }
 
@@ -80,4 +74,3 @@ struct NotificationRowCard: View {
     .padding()
     .background(AppColors.backgroundCream)
 }
-

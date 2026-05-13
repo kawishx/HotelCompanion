@@ -26,21 +26,7 @@ struct BookingManagementView: View {
                             .font(AppTypography.body)
                             .foregroundStyle(AppColors.secondaryText)
                             .fixedSize(horizontal: false, vertical: true)
-
-                        if let successMessage = viewModel.successMessage {
-                            Text(successMessage)
-                                .font(AppTypography.footnote)
-                                .foregroundStyle(AppColors.brandBrown)
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-
-                        if let errorMessage = viewModel.errorMessage {
-                            Text(errorMessage)
-                                .font(AppTypography.footnote)
-                                .foregroundStyle(.red.opacity(0.85))
-                                .fixedSize(horizontal: false, vertical: true)
-                        }
-
+                        
                         NavigationLink {
                             DigitalCheckInView()
                         } label: {
@@ -61,6 +47,7 @@ struct BookingManagementView: View {
                     }
                 }
 
+                feedbackSection
                 currentBookingsSection
                 qrValidationSection
                 availableExperiencesSection
@@ -96,87 +83,108 @@ struct BookingManagementView: View {
 }
 
 private extension BookingManagementView {
-    var currentBookingsSection: some View {
-        SectionCard(title: "Current Bookings", subtitle: "Your Firestore-backed reservation records") {
-            VStack(alignment: .leading, spacing: AppSpacing.large) {
-                if viewModel.isLoading {
-                    HStack(spacing: AppSpacing.medium) {
-                        ProgressView()
-                            .tint(AppColors.brandBrown)
+    @ViewBuilder
+    var feedbackSection: some View {
+        if let successMessage = viewModel.successMessage {
+            SuccessToastBanner(message: successMessage)
+        }
 
-                        Text("Loading current bookings.")
-                            .font(AppTypography.body)
-                            .foregroundStyle(AppColors.secondaryText)
+        if let errorMessage = viewModel.errorMessage {
+            ErrorStateCard(
+                title: "Booking Action Needs Attention",
+                subtitle: "The latest change could not be completed",
+                message: errorMessage,
+                retryTitle: "Refresh Bookings",
+                retryAction: {
+                    Task {
+                        await viewModel.loadBookings()
                     }
-                    .frame(minHeight: AppSpacing.minimumTouchTarget)
-                } else if viewModel.upcomingBookings.isEmpty {
-                    Text("No current bookings are available yet. Reserve an experience to see it here.")
-                        .font(AppTypography.body)
-                        .foregroundStyle(AppColors.secondaryText)
-                        .fixedSize(horizontal: false, vertical: true)
-                } else {
-                    ForEach(viewModel.upcomingBookings) { booking in
-                        VStack(alignment: .leading, spacing: AppSpacing.medium) {
-                            Text(booking.title)
-                                .font(AppTypography.headline)
-                                .foregroundStyle(AppColors.primaryText)
+                }
+            )
+        }
+    }
 
-                            Text(booking.detail)
-                                .font(AppTypography.body)
-                                .foregroundStyle(AppColors.secondaryText)
-                                .fixedSize(horizontal: false, vertical: true)
+    @ViewBuilder
+    var currentBookingsSection: some View {
+        if viewModel.upcomingBookings.isEmpty && !viewModel.isLoading {
+            EmptyStateCard(
+                title: "No Current Bookings",
+                subtitle: "Reserve an experience to see it here",
+                message: "No current bookings are available yet. Once you confirm a stay or experience, it will appear in this section.",
+                systemImage: "calendar.badge.exclamationmark"
+            )
+        } else {
+            SectionCard(title: "Current Bookings", subtitle: "Your Firestore-backed reservation records") {
+                VStack(alignment: .leading, spacing: AppSpacing.large) {
+                    if viewModel.isLoading {
+                    LoadingStateView(
+                        title: "Loading Bookings",
+                        message: "Fetching your current bookings from the hotel."
+                    )
+                    } else {
+                        ForEach(viewModel.upcomingBookings) { booking in
+                            VStack(alignment: .leading, spacing: AppSpacing.medium) {
+                                Text(booking.title)
+                                    .font(AppTypography.headline)
+                                    .foregroundStyle(AppColors.primaryText)
 
-                            Text("Status: \(booking.status.rawValue.replacingOccurrences(of: "([a-z])([A-Z])", with: "$1 $2", options: .regularExpression).capitalized)")
-                                .font(AppTypography.footnote)
-                                .foregroundStyle(AppColors.secondaryText)
-                                .accessibilityLabel("Booking status")
-                                .accessibilityValue(booking.status.rawValue.replacingOccurrences(of: "([a-z])([A-Z])", with: "$1 $2", options: .regularExpression).capitalized)
+                                Text(booking.detail)
+                                    .font(AppTypography.body)
+                                    .foregroundStyle(AppColors.secondaryText)
+                                    .fixedSize(horizontal: false, vertical: true)
 
-                            NavigationLink {
-                                QRPassView(booking: booking)
-                            } label: {
-                                actionRowLabel(title: "Open QR Pass", systemImage: "qrcode")
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityLabel("Open QR pass for \(booking.title)")
+                                Text("Status: \(booking.status.rawValue.replacingOccurrences(of: "([a-z])([A-Z])", with: "$1 $2", options: .regularExpression).capitalized)")
+                                    .font(AppTypography.footnote)
+                                    .foregroundStyle(AppColors.secondaryText)
+                                    .accessibilityLabel("Booking status")
+                                    .accessibilityValue(booking.status.rawValue.replacingOccurrences(of: "([a-z])([A-Z])", with: "$1 $2", options: .regularExpression).capitalized)
 
-                            Button {
-                                Task {
-                                    await viewModel.addBookingToCalendar(booking)
-                                }
-                            } label: {
-                                actionRowLabel(
-                                    title: viewModel.activeBookingID == booking.id ? "Adding to Calendar..." : "Add to Calendar",
-                                    systemImage: "calendar.badge.plus"
-                                )
-                            }
-                            .buttonStyle(.plain)
-                            .disabled(viewModel.activeBookingID == booking.id)
-                            .opacity(viewModel.activeBookingID == booking.id ? 0.6 : 1)
-
-                            Button {
-                                proposedStartDate = booking.startDate
-                                proposedEndDate = booking.endDate ?? booking.startDate.addingTimeInterval(3600)
-                                reschedulingBooking = booking
-                            } label: {
-                                actionRowLabel(title: "Reschedule Booking", systemImage: "calendar")
-                            }
-                            .buttonStyle(.plain)
-
-                            if booking.status != .cancelled {
-                                Button(role: .destructive) {
-                                    Task {
-                                        await viewModel.cancelBooking(booking)
-                                    }
+                                NavigationLink {
+                                    QRPassView(booking: booking)
                                 } label: {
-                                    actionRowLabel(title: "Cancel Booking", systemImage: "xmark.circle")
+                                    actionRowLabel(title: "Open QR Pass", systemImage: "qrcode")
                                 }
                                 .buttonStyle(.plain)
+                                .accessibilityLabel("Open QR pass for \(booking.title)")
+
+                                Button {
+                                    Task {
+                                        await viewModel.addBookingToCalendar(booking)
+                                    }
+                                } label: {
+                                    actionRowLabel(
+                                        title: viewModel.activeBookingID == booking.id ? "Adding to Calendar..." : "Add to Calendar",
+                                        systemImage: "calendar.badge.plus"
+                                    )
+                                }
+                                .buttonStyle(.plain)
+                                .disabled(viewModel.activeBookingID == booking.id)
+                                .opacity(viewModel.activeBookingID == booking.id ? 0.6 : 1)
+
+                                Button {
+                                    proposedStartDate = booking.startDate
+                                    proposedEndDate = booking.endDate ?? booking.startDate.addingTimeInterval(3600)
+                                    reschedulingBooking = booking
+                                } label: {
+                                    actionRowLabel(title: "Reschedule Booking", systemImage: "calendar")
+                                }
+                                .buttonStyle(.plain)
+
+                                if booking.status != .cancelled {
+                                    Button(role: .destructive) {
+                                        Task {
+                                            await viewModel.cancelBooking(booking)
+                                        }
+                                    } label: {
+                                        actionRowLabel(title: "Cancel Booking", systemImage: "xmark.circle")
+                                    }
+                                    .buttonStyle(.plain)
+                                }
                             }
+                            .padding(.bottom, AppSpacing.small)
+                            .accessibilityElement(children: .contain)
+                            .accessibilityLabel("\(booking.title), \(booking.detail)")
                         }
-                        .padding(.bottom, AppSpacing.small)
-                        .accessibilityElement(children: .contain)
-                        .accessibilityLabel("\(booking.title), \(booking.detail)")
                     }
                 }
             }

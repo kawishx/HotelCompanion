@@ -136,27 +136,31 @@ struct LoginView: View {
             }
 
             if let successMessage = authViewModel.lastSuccessMessage {
-                Text(successMessage)
-                    .font(AppTypography.footnote)
-                    .foregroundStyle(AppColors.brandBrown)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityLabel("Authentication status: \(successMessage)")
+                SuccessToastBanner(message: successMessage, title: "Authentication Ready")
+                    .accessibilityLabel("Authentication status")
+                    .accessibilityValue(successMessage)
             }
 
             if let errorMessage = authViewModel.errorMessage {
-                Text(errorMessage)
-                    .font(AppTypography.footnote)
-                    .foregroundStyle(.red.opacity(0.85))
-                    .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityLabel("Authentication error: \(errorMessage)")
+                ErrorStateCard(
+                    title: "Sign-In Needs Attention",
+                    subtitle: "Please check your details and try again",
+                    message: errorMessage,
+                    retryTitle: "Try Again",
+                    retryAction: submitAuthentication
+                )
+                .accessibilityLabel("Authentication error")
+                .accessibilityValue(errorMessage)
             }
 
             if let biometricErrorMessage = viewModel.biometricErrorMessage {
-                Text(biometricErrorMessage)
-                    .font(AppTypography.footnote)
-                    .foregroundStyle(AppColors.brandBrown)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityLabel("Biometric sign in message: \(biometricErrorMessage)")
+                StatusChip(
+                    title: biometricErrorMessage,
+                    systemImage: "faceid",
+                    tone: .accent
+                )
+                .accessibilityLabel("Biometric sign in message")
+                .accessibilityValue(biometricErrorMessage)
             }
 
             PrimaryButton(title: viewModel.primaryActionTitle, systemImage: viewModel.primaryActionSystemImage) {
@@ -168,53 +172,35 @@ struct LoginView: View {
             .accessibilityHint(viewModel.canSignIn ? "Submits your credentials and continues into the app" : "Enter both email and password to continue")
 
             if viewModel.shouldShowBiometricButton {
-                Button {
+                SecondaryButton(
+                    title: viewModel.biometricButtonTitle,
+                    systemImage: viewModel.biometricKind.systemImageName
+                ) {
                     Task {
                         _ = await viewModel.authenticateWithBiometrics(using: authViewModel)
                     }
-                } label: {
-                    HStack(spacing: AppSpacing.small) {
-                        Image(systemName: viewModel.biometricKind.systemImageName)
-                            .font(.title3)
-
-                        Text(viewModel.biometricButtonTitle)
-                            .font(AppTypography.button)
-                    }
-                    .foregroundStyle(AppColors.brandBrown)
-                    .frame(maxWidth: .infinity)
-                    .frame(minHeight: AppSpacing.minimumTouchTarget)
-                    .background(AppColors.surfaceCream.opacity(0.96))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: AppSpacing.buttonCornerRadius, style: .continuous)
-                            .stroke(AppColors.border, lineWidth: 1)
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: AppSpacing.buttonCornerRadius, style: .continuous))
                 }
-                .buttonStyle(.plain)
                 .accessibilityLabel(viewModel.biometricButtonTitle)
                 .accessibilityHint("Signs in with biometric authentication")
                 .disabled(authViewModel.isLoading)
+                .opacity(authViewModel.isLoading ? 0.55 : 1)
             }
 
-            Button {
+            SecondaryButton(title: "Continue as Guest", systemImage: "person.fill", alignment: .center) {
                 Task {
                     _ = await authViewModel.continueAsGuest()
                 }
-            } label: {
-                Text("Continue as Guest")
-                    .font(AppTypography.bodyEmphasized)
-                    .foregroundStyle(AppColors.primaryText)
-                    .frame(maxWidth: .infinity)
-                    .frame(minHeight: AppSpacing.minimumTouchTarget)
             }
-            .background(AppColors.accentGoldSoft.opacity(0.35))
+            .background(
+                RoundedRectangle(cornerRadius: AppSpacing.buttonCornerRadius, style: .continuous)
+                    .fill(AppColors.accentGoldSoft.opacity(0.18))
+            )
             .clipShape(RoundedRectangle(cornerRadius: AppSpacing.buttonCornerRadius, style: .continuous))
-            .buttonStyle(.plain)
             .accessibilityLabel("Continue as guest")
             .accessibilityHint("Enter the app without signing in")
             .disabled(authViewModel.isLoading)
             .opacity(authViewModel.isLoading ? 0.55 : 1)
-
+            
             ViewThatFits(in: .horizontal) {
                 HStack(spacing: AppSpacing.small) {
                     Text(viewModel.mode.switchPrompt)
@@ -241,7 +227,7 @@ struct LoginView: View {
             authViewModel.clearTransientMessages()
             viewModel.toggleMode()
         }
-        .font(AppTypography.bodyEmphasized)
+        .font(AppTypography.label)
         .foregroundStyle(AppColors.brandBrown)
         .frame(minHeight: AppSpacing.minimumTouchTarget)
         .contentShape(Rectangle())

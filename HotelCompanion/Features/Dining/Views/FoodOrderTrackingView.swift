@@ -11,30 +11,49 @@ struct FoodOrderTrackingView: View {
     @ObservedObject var viewModel: DiningViewModel
 
     var body: some View {
-        SectionCard(title: "Order Tracking", subtitle: "Follow the latest updates from the hotel kitchen") {
-            VStack(alignment: .leading, spacing: AppSpacing.large) {
-                if viewModel.isLoading {
-                    HStack(spacing: AppSpacing.medium) {
-                        ProgressView()
-                            .tint(AppColors.brandBrown)
+        VStack(alignment: .leading, spacing: AppSpacing.large) {
+            if let successMessage = viewModel.successMessage {
+                SuccessToastBanner(message: successMessage)
+            }
 
-                        Text("Loading your dining orders.")
-                            .font(AppTypography.body)
-                            .foregroundStyle(AppColors.secondaryText)
+            contentSection
+        }
+    }
+}
+
+private extension FoodOrderTrackingView {
+    @ViewBuilder
+    var contentSection: some View {
+        if viewModel.isLoading {
+            SectionCard(title: "Order Tracking", subtitle: "Follow the latest updates from the hotel kitchen") {
+                LoadingStateView(
+                    title: "Loading Dining Orders",
+                    message: "Fetching the latest updates from the kitchen.",
+                    systemImage: "fork.knife.circle.fill"
+                )
+            }
+        } else if let errorMessage = viewModel.errorMessage, viewModel.currentOrders.isEmpty {
+            ErrorStateCard(
+                title: "Unable to Load Orders",
+                subtitle: "Please try again in a moment",
+                message: errorMessage,
+                retryTitle: "Refresh Orders",
+                retryAction: {
+                    Task {
+                        await viewModel.loadOrders()
                     }
-                    .frame(minHeight: AppSpacing.minimumTouchTarget)
-                } else if let errorMessage = viewModel.errorMessage, viewModel.currentOrders.isEmpty {
-                    Text(errorMessage)
-                        .font(AppTypography.body)
-                        .foregroundStyle(.red.opacity(0.85))
-                        .fixedSize(horizontal: false, vertical: true)
-                        .accessibilityLabel("Unable to load dining orders. \(errorMessage)")
-                } else if viewModel.isEmpty {
-                    Text("Once you place a food order, status updates will appear here.")
-                        .font(AppTypography.body)
-                        .foregroundStyle(AppColors.secondaryText)
-                        .fixedSize(horizontal: false, vertical: true)
-                } else {
+                }
+            )
+        } else if viewModel.isEmpty {
+            EmptyStateCard(
+                title: "No Dining Orders",
+                subtitle: "Status updates will appear here after your first order",
+                message: "Once you place a food order, preparation and delivery updates will appear in this section.",
+                systemImage: "fork.knife"
+            )
+        } else {
+            SectionCard(title: "Order Tracking", subtitle: "Follow the latest updates from the hotel kitchen") {
+                VStack(alignment: .leading, spacing: AppSpacing.large) {
                     ForEach(viewModel.currentOrders) { order in
                         VStack(alignment: .leading, spacing: AppSpacing.medium) {
                             HStack(alignment: .top, spacing: AppSpacing.medium) {
@@ -50,13 +69,14 @@ struct FoodOrderTrackingView: View {
 
                                 Spacer()
 
-                                Text(viewModel.displayTitle(for: order.status))
-                                    .font(AppTypography.footnote)
-                                    .foregroundStyle(AppColors.brandBrown)
-                                    .padding(.horizontal, AppSpacing.small)
-                                    .padding(.vertical, AppSpacing.xSmall)
-                                    .background(AppColors.accentGoldSoft.opacity(0.35))
-                                    .clipShape(Capsule())
+                                StatusChip(
+                                    title: viewModel.displayTitle(for: order.status),
+                                    systemImage: "fork.knife.circle.fill",
+                                    tone: .accent,
+                                    size: .compact
+                                )
+                                .accessibilityLabel("Order status")
+                                .accessibilityValue(viewModel.displayTitle(for: order.status))
                             }
 
                             Text(viewModel.orderItemsSummary(for: order))
@@ -98,9 +118,7 @@ struct FoodOrderTrackingView: View {
             }
         }
     }
-}
 
-private extension FoodOrderTrackingView {
     func trackingActionLabel(title: String, systemImage: String) -> some View {
         HStack(spacing: AppSpacing.small) {
             Image(systemName: systemImage)

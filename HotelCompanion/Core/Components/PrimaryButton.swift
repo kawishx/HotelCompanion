@@ -35,7 +35,7 @@ struct PrimaryButton: View {
                     .stroke(AppColors.accentGoldSoft, lineWidth: 1)
             )
             .clipShape(RoundedRectangle(cornerRadius: AppSpacing.buttonCornerRadius, style: .continuous))
-            .shadow(color: AppColors.shadow, radius: 12, y: 6)
+            .shadow(color: AppColors.shadow, radius: AppSpacing.standardShadowRadius + 2, y: AppSpacing.standardShadowYOffset + 2)
         }
         .buttonStyle(.plain)
         .contentShape(Rectangle())

@@ -41,6 +41,7 @@ final class HomeViewModel: ObservableObject {
     @Published private(set) var notifications: [AppNotificationItem]
 
     init(notificationManager: NotificationManager = .shared, currentDate: Date = Date()) {
+        notifications = Array(notificationManager.mockNotifications().prefix(2))
         recommendation = RecommendationEngine.makeRecommendation(
             for: RecommendationContext(
                 activeStay: activeStay,
@@ -48,6 +49,5 @@ final class HomeViewModel: ObservableObject {
                 currentDate: currentDate
             )
         )
-        notifications = Array(notificationManager.mockNotifications().prefix(2))
     }
 }

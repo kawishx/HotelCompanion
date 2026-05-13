@@ -13,6 +13,7 @@ struct AppTextFieldStyle: TextFieldStyle {
             .font(AppTypography.body)
             .foregroundStyle(AppColors.primaryText)
             .padding(.horizontal, AppSpacing.large)
+            .padding(.vertical, AppSpacing.small)
             .frame(minHeight: AppSpacing.minimumTouchTarget)
             .background(AppColors.surfaceCream.opacity(0.96))
             .overlay(
@@ -20,6 +21,6 @@ struct AppTextFieldStyle: TextFieldStyle {
                     .stroke(AppColors.border, lineWidth: 1)
             )
             .clipShape(RoundedRectangle(cornerRadius: AppSpacing.buttonCornerRadius, style: .continuous))
+            .shadow(color: AppColors.shadow.opacity(0.55), radius: 4, y: 1)
     }
 }
-

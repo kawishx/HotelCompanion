@@ -81,42 +81,52 @@ private extension NotificationsView {
     }
 
     var notificationsListSection: some View {
-        SectionCard(
-            title: "Recent Notifications",
-            subtitle: "Firestore-backed stay updates and alerts"
-        ) {
-            VStack(alignment: .leading, spacing: AppSpacing.medium) {
-                if viewModel.isLoading {
-                    HStack(spacing: AppSpacing.medium) {
-                        ProgressView()
-                            .tint(AppColors.brandBrown)
-
-                        Text("Loading your notification feed.")
-                            .font(AppTypography.body)
-                            .foregroundStyle(AppColors.secondaryText)
+        Group {
+            if viewModel.isLoading {
+                SectionCard(
+                    title: "Recent Notifications",
+                    subtitle: "Firestore-backed stay updates and alerts"
+                ) {
+                    LoadingStateView(
+                        title: "Loading Notifications",
+                        message: "Fetching your latest booking, dining, and concierge updates.",
+                        systemImage: "bell.badge.fill"
+                    )
+                }
+            } else if let errorMessage = viewModel.errorMessage {
+                ErrorStateCard(
+                    title: "Unable to Load Notifications",
+                    subtitle: "Please try again in a moment",
+                    message: errorMessage,
+                    retryTitle: "Refresh Feed",
+                    retryAction: {
+                        viewModel.refresh()
                     }
-                    .frame(minHeight: AppSpacing.minimumTouchTarget)
-                } else if let errorMessage = viewModel.errorMessage {
-                    Text(errorMessage)
-                        .font(AppTypography.body)
-                        .foregroundStyle(.red.opacity(0.85))
-                        .fixedSize(horizontal: false, vertical: true)
-                } else if viewModel.isEmpty {
-                    Text("Your booking, dining, concierge, and billing updates will appear here once synced.")
-                        .font(AppTypography.body)
-                        .foregroundStyle(AppColors.secondaryText)
-                        .fixedSize(horizontal: false, vertical: true)
-                } else {
-                    ForEach(viewModel.notifications) { notification in
-                        Button {
-                            Task {
-                                await viewModel.markAsRead(notification)
+                )
+            } else if viewModel.isEmpty {
+                EmptyStateCard(
+                    title: "No Notifications Yet",
+                    subtitle: "Stay updates will appear here once synced",
+                    message: "Your booking, dining, concierge, and billing updates will appear here once your account activity starts flowing in.",
+                    systemImage: "bell.slash"
+                )
+            } else {
+                SectionCard(
+                    title: "Recent Notifications",
+                    subtitle: "Firestore-backed stay updates and alerts"
+                ) {
+                    VStack(alignment: .leading, spacing: AppSpacing.medium) {
+                        ForEach(viewModel.notifications) { notification in
+                            Button {
+                                Task {
+                                    await viewModel.markAsRead(notification)
+                                }
+                            } label: {
+                                NotificationRowCard(notification: notification)
                             }
-                        } label: {
-                            NotificationRowCard(notification: notification)
+                            .buttonStyle(.plain)
+                            .accessibilityHint(notification.isUnread ? "Marks this notification as read" : "Notification already read")
                         }
-                        .buttonStyle(.plain)
-                        .accessibilityHint(notification.isUnread ? "Marks this notification as read" : "Notification already read")
                     }
                 }
             }

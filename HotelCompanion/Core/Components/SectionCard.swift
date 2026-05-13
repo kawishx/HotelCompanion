@@ -23,30 +23,20 @@ struct SectionCard<Content: View>: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: AppSpacing.medium) {
-            VStack(alignment: .leading, spacing: AppSpacing.xSmall) {
-                Text(title)
-                    .font(AppTypography.sectionTitle)
-                    .foregroundStyle(AppColors.primaryText)
-
-                if let subtitle {
-                    Text(subtitle)
-                        .font(AppTypography.footnote)
-                        .foregroundStyle(AppColors.secondaryText)
-                }
-            }
+        VStack(alignment: .leading, spacing: AppSpacing.sectionSpacing) {
+            SectionHeaderView(title: title, subtitle: subtitle)
 
             content
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(AppSpacing.large)
+        .padding(AppSpacing.cardPadding)
         .background(AppColors.surfaceCream)
         .overlay(
             RoundedRectangle(cornerRadius: AppSpacing.cardCornerRadius, style: .continuous)
                 .stroke(AppColors.border, lineWidth: 1)
         )
         .clipShape(RoundedRectangle(cornerRadius: AppSpacing.cardCornerRadius, style: .continuous))
-        .shadow(color: AppColors.shadow, radius: 10, y: 4)
+        .shadow(color: AppColors.shadow, radius: AppSpacing.standardShadowRadius, y: AppSpacing.standardShadowYOffset)
         .accessibilityElement(children: .contain)
     }
 }

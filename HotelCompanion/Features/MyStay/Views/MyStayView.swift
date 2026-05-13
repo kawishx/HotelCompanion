@@ -68,44 +68,34 @@ private extension MyStayView {
 
     var loadingSection: some View {
         SectionCard(title: "Loading Stay", subtitle: "Syncing the latest details from the hotel") {
-            HStack(spacing: AppSpacing.medium) {
-                ProgressView()
-                    .tint(AppColors.brandBrown)
-
-                Text("Your stay summary is being prepared.")
-                    .font(AppTypography.body)
-                    .foregroundStyle(AppColors.secondaryText)
-            }
-            .frame(minHeight: AppSpacing.minimumTouchTarget)
-            .accessibilityElement(children: .combine)
+            LoadingStateView(
+                title: "Loading Stay",
+                message: "Your stay summary is being prepared.",
+                systemImage: "bed.double.circle.fill"
+            )
         }
     }
 
     func errorSection(message: String) -> some View {
-        SectionCard(title: "Unable to Load Stay", subtitle: "Please try again in a moment") {
-            VStack(alignment: .leading, spacing: AppSpacing.medium) {
-                Text(message)
-                    .font(AppTypography.body)
-                    .foregroundStyle(AppColors.secondaryText)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                PrimaryButton(title: "Retry", systemImage: "arrow.clockwise") {
-                    Task {
-                        await viewModel.loadStay()
-                    }
+        ErrorStateCard(
+            title: "Unable to Load Stay",
+            subtitle: "Please try again in a moment",
+            message: message,
+            retryAction: {
+                Task {
+                    await viewModel.loadStay()
                 }
-                .accessibilityLabel("Retry loading stay details")
             }
-        }
+        )
     }
 
     var emptySection: some View {
-        SectionCard(title: "No Active Stay", subtitle: "Your reservation will appear here when available") {
-            Text("Once a hotel stay is linked to your account, room details, dates, and status updates will appear in this section.")
-                .font(AppTypography.body)
-                .foregroundStyle(AppColors.secondaryText)
-                .fixedSize(horizontal: false, vertical: true)
-        }
+        EmptyStateCard(
+            title: "No Active Stay",
+            subtitle: "Your reservation will appear here when available",
+            message: "Once a hotel stay is linked to your account, room details, dates, and status updates will appear in this section.",
+            systemImage: "moon.zzz.fill"
+        )
     }
 
     var stayContent: some View {

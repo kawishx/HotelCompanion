@@ -14,6 +14,7 @@ struct ServiceRequestStatusView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: AppSpacing.large) {
                 statusSummarySection
+                feedbackSection
                 requestsSection
             }
             .padding(.horizontal, AppSpacing.screenPadding)
@@ -40,20 +41,6 @@ private extension ServiceRequestStatusView {
             subtitle: "Track hotel updates for submitted requests"
         ) {
             VStack(alignment: .leading, spacing: AppSpacing.medium) {
-                if let successMessage = viewModel.successMessage {
-                    Text(successMessage)
-                        .font(AppTypography.footnote)
-                        .foregroundStyle(AppColors.brandBrown)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
-                if let errorMessage = viewModel.errorMessage {
-                    Text(errorMessage)
-                        .font(AppTypography.footnote)
-                        .foregroundStyle(.red.opacity(0.85))
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
                 Text("Submitted requests are stored in Firestore and linked to the current guest and hotel.")
                     .font(AppTypography.body)
                     .foregroundStyle(AppColors.secondaryText)
@@ -63,26 +50,43 @@ private extension ServiceRequestStatusView {
     }
 
     @ViewBuilder
+    var feedbackSection: some View {
+        if let successMessage = viewModel.successMessage {
+            SuccessToastBanner(message: successMessage)
+        }
+
+        if let errorMessage = viewModel.errorMessage, !viewModel.isLoadingRequests {
+            ErrorStateCard(
+                title: "Unable to Update Request",
+                subtitle: "The latest request change did not finish",
+                message: errorMessage,
+                retryTitle: "Refresh Requests",
+                retryAction: {
+                    Task {
+                        await viewModel.loadRequests()
+                    }
+                }
+            )
+        }
+    }
+
+    @ViewBuilder
     var requestsSection: some View {
         if viewModel.isLoadingRequests {
             SectionCard(title: "Loading Requests", subtitle: "Syncing your latest request activity") {
-                HStack(spacing: AppSpacing.medium) {
-                    ProgressView()
-                        .tint(AppColors.brandBrown)
-
-                    Text("Your service requests are being prepared.")
-                        .font(AppTypography.body)
-                        .foregroundStyle(AppColors.secondaryText)
-                }
-                .frame(minHeight: AppSpacing.minimumTouchTarget)
+                LoadingStateView(
+                    title: "Loading Requests",
+                    message: "Your service requests are being prepared.",
+                    systemImage: "wrench.and.screwdriver.fill"
+                )
             }
         } else if viewModel.isEmpty {
-            SectionCard(title: "No Service Requests", subtitle: "Your requests will appear here after submission") {
-                Text("Once you contact the hotel team through Cinnamon Companion, the request status history will be listed here.")
-                    .font(AppTypography.body)
-                    .foregroundStyle(AppColors.secondaryText)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
+            EmptyStateCard(
+                title: "No Service Requests",
+                subtitle: "Your requests will appear here after submission",
+                message: "Once you contact the hotel team through Cinnamon Companion, the request status history will be listed here.",
+                systemImage: "bell.slash.fill"
+            )
         } else {
             SectionCard(title: "Request History") {
                 VStack(alignment: .leading, spacing: AppSpacing.large) {
@@ -127,6 +131,7 @@ private extension ServiceRequestStatusView {
                             }
                         }
                         .padding(.bottom, AppSpacing.small)
+                        .accessibilityElement(children: .contain)
                     }
                 }
             }

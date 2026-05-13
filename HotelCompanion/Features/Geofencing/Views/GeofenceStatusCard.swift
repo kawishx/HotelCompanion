@@ -49,22 +49,9 @@ struct GeofenceStatusCard: View {
                 }
 
                 if viewModel.shouldShowStartButton {
-                    Button {
+                    SecondaryButton(title: "Start Monitoring Hotel Region", systemImage: "dot.radiowaves.left.and.right", alignment: .leading) {
                         viewModel.startMonitoring()
-                    } label: {
-                        Text("Start Monitoring Hotel Region")
-                            .font(AppTypography.button)
-                            .foregroundStyle(AppColors.brandBrown)
-                            .frame(maxWidth: .infinity)
-                            .frame(minHeight: AppSpacing.minimumTouchTarget)
-                            .background(AppColors.surfaceCream)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: AppSpacing.buttonCornerRadius, style: .continuous)
-                                    .stroke(AppColors.border, lineWidth: 1)
-                            )
-                            .clipShape(RoundedRectangle(cornerRadius: AppSpacing.buttonCornerRadius, style: .continuous))
                     }
-                    .buttonStyle(.plain)
                     .accessibilityLabel("Start monitoring the Cinnamon Thiya hotel region")
                 }
             }
@@ -75,21 +62,7 @@ struct GeofenceStatusCard: View {
     }
 
     private func statusChip(title: String, systemImage: String) -> some View {
-        HStack(spacing: AppSpacing.small) {
-            Image(systemName: systemImage)
-                .font(.subheadline)
-                .foregroundStyle(AppColors.brandBrown)
-
-            Text(title)
-                .font(AppTypography.footnote)
-                .foregroundStyle(AppColors.primaryText)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding(.horizontal, AppSpacing.medium)
-        .frame(minHeight: AppSpacing.minimumTouchTarget)
-        .background(AppColors.surfaceWarm.opacity(0.45))
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-        .accessibilityElement(children: .combine)
+        StatusChip(title: title, systemImage: systemImage, tone: .neutral)
     }
 }
 

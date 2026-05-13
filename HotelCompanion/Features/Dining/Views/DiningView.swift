@@ -38,19 +38,15 @@ struct DiningView: View {
                         .accessibilityValue("\(viewModel.cartItemCount) items in cart, \(viewModel.activeOrders.count) active orders")
 
                         if let successMessage = viewModel.successMessage {
-                            Text(successMessage)
-                                .font(AppTypography.footnote)
-                                .foregroundStyle(AppColors.brandBrown)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .accessibilityLabel("Success. \(successMessage)")
+                            SuccessToastBanner(message: successMessage)
+                                .accessibilityLabel("Success")
+                                .accessibilityValue(successMessage)
                         }
 
                         if let errorMessage = viewModel.errorMessage {
-                            Text(errorMessage)
-                                .font(AppTypography.footnote)
-                                .foregroundStyle(.red.opacity(0.85))
-                                .fixedSize(horizontal: false, vertical: true)
-                                .accessibilityLabel("Error. \(errorMessage)")
+                            StatusChip(title: errorMessage, systemImage: "exclamationmark.triangle.fill", tone: .alert)
+                                .accessibilityLabel("Error")
+                                .accessibilityValue(errorMessage)
                         }
                     }
                 }
@@ -136,7 +132,7 @@ private extension DiningView {
     func diningSummaryPill(title: String, value: String) -> some View {
         VStack(alignment: .leading, spacing: AppSpacing.xSmall) {
             Text(title)
-                .font(AppTypography.footnote)
+                .font(AppTypography.sectionSubtitle)
                 .foregroundStyle(AppColors.secondaryText)
 
             Text(value)
@@ -145,12 +141,13 @@ private extension DiningView {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(AppSpacing.medium)
-        .background(AppColors.surfaceCream)
+        .background(AppColors.surfaceWarm.opacity(0.22))
         .overlay(
             RoundedRectangle(cornerRadius: AppSpacing.buttonCornerRadius, style: .continuous)
                 .stroke(AppColors.border, lineWidth: 1)
         )
         .clipShape(RoundedRectangle(cornerRadius: AppSpacing.buttonCornerRadius, style: .continuous))
+        .shadow(color: AppColors.shadow.opacity(0.5), radius: 4, y: 1)
         .accessibilityElement(children: .combine)
         .accessibilityLabel(title)
         .accessibilityValue(value)
