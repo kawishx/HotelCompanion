@@ -26,12 +26,12 @@ final class HomeViewModel: ObservableObject {
         actionTitle: "Book This Experience"
     )
     @Published private(set) var quickActions: [HomeQuickAction] = [
-        HomeQuickAction(title: "My Stay", systemImage: "bed.double.fill", accessibilityLabel: "Open My Stay"),
-        HomeQuickAction(title: "Request Service", systemImage: "bell.badge.fill", accessibilityLabel: "Request guest service"),
-        HomeQuickAction(title: "Book Experience", systemImage: "sparkles", accessibilityLabel: "Book an experience"),
-        HomeQuickAction(title: "Order Food", systemImage: "fork.knife", accessibilityLabel: "Order food"),
-        HomeQuickAction(title: "Explore Nearby", systemImage: "map.fill", accessibilityLabel: "Explore nearby places"),
-        HomeQuickAction(title: "Concierge", systemImage: "message.fill", accessibilityLabel: "Contact concierge")
+        HomeQuickAction(title: "My Stay", systemImage: "bed.double.fill", accessibilityLabel: "Open My Stay", route: .myStay),
+        HomeQuickAction(title: "Request Service", systemImage: "bell.badge.fill", accessibilityLabel: "Request guest service", route: .requestService),
+        HomeQuickAction(title: "Book Experience", systemImage: "sparkles", accessibilityLabel: "Book an experience", route: .bookExperience),
+        HomeQuickAction(title: "Order Food", systemImage: "fork.knife", accessibilityLabel: "Order food", route: .orderFood),
+        HomeQuickAction(title: "Explore Nearby", systemImage: "map.fill", accessibilityLabel: "Explore nearby places", route: .exploreNearby),
+        HomeQuickAction(title: "Concierge", systemImage: "message.fill", accessibilityLabel: "Contact concierge", route: .concierge)
     ]
     @Published private(set) var upcomingBooking = UpcomingBookingPreview(
         title: "Airport Transfer",

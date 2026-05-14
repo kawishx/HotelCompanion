@@ -7,6 +7,17 @@
 
 import Foundation
 
+enum HomeQuickActionRoute: String, Hashable, Identifiable {
+    case myStay
+    case requestService
+    case bookExperience
+    case orderFood
+    case exploreNearby
+    case concierge
+
+    var id: String { rawValue }
+}
+
 struct ActiveStaySummary: Equatable {
     let hotelName: String
     let roomType: String
@@ -28,6 +39,7 @@ struct HomeQuickAction: Identifiable {
     let title: String
     let systemImage: String
     let accessibilityLabel: String
+    let route: HomeQuickActionRoute
 }
 
 struct UpcomingBookingPreview: Equatable {

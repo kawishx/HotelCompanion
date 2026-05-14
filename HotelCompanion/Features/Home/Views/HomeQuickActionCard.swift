@@ -54,11 +54,11 @@ struct HomeQuickActionCard: View {
         action: HomeQuickAction(
             title: "Request Service",
             systemImage: "bell.badge.fill",
-            accessibilityLabel: "Request guest service"
+            accessibilityLabel: "Request guest service",
+            route: .requestService
         ),
         tapAction: { }
     )
     .padding()
     .background(AppColors.backgroundCream)
 }
-

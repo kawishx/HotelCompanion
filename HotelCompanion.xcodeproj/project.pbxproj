@@ -12,16 +12,47 @@
 		05F7C1023A00100100CC1001 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 05F7C1063A00100100CC1001 /* FirebaseAuth */; };
 		05F7C1033A00100100CC1001 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 05F7C1073A00100100CC1001 /* FirebaseFirestore */; };
 		05F7C1043A00100100CC1001 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 05F7C1083A00100100CC1001 /* FirebaseStorage */; };
+		05F8D2013A00200200CC1001 /* CinnamonCompanionWidgets.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 05F8D2023A00200200CC1001 /* CinnamonCompanionWidgets.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		05F8D2033A00200200CC1001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 05E08E572F841B9800934175 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 05F8D20A3A00200200CC1001;
+			remoteInfo = CinnamonCompanionWidgets;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		05F8D2043A00200200CC1001 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				05F8D2013A00200200CC1001 /* CinnamonCompanionWidgets.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		05E08E5F2F841B9800934175 /* HotelCompanion.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HotelCompanion.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		05F8D2023A00200200CC1001 /* CinnamonCompanionWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CinnamonCompanionWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		05E08E612F841B9800934175 /* HotelCompanion */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = HotelCompanion;
+			sourceTree = "<group>";
+		};
+		05F8D2053A00200200CC1001 /* CinnamonCompanionWidgets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CinnamonCompanionWidgets;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -39,6 +70,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		05F8D2063A00200200CC1001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -46,6 +84,7 @@
 			isa = PBXGroup;
 			children = (
 				05E08E612F841B9800934175 /* HotelCompanion */,
+				05F8D2053A00200200CC1001 /* CinnamonCompanionWidgets */,
 				05E08E602F841B9800934175 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,6 +93,7 @@
 			isa = PBXGroup;
 			children = (
 				05E08E5F2F841B9800934175 /* HotelCompanion.app */,
+				05F8D2023A00200200CC1001 /* CinnamonCompanionWidgets.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -68,10 +108,12 @@
 				05E08E5B2F841B9800934175 /* Sources */,
 				05E08E5C2F841B9800934175 /* Frameworks */,
 				05E08E5D2F841B9800934175 /* Resources */,
+				05F8D2043A00200200CC1001 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				05F8D20B3A00200200CC1001 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				05E08E612F841B9800934175 /* HotelCompanion */,
@@ -88,6 +130,28 @@
 			productReference = 05E08E5F2F841B9800934175 /* HotelCompanion.app */;
 			productType = "com.apple.product-type.application";
 		};
+		05F8D20A3A00200200CC1001 /* CinnamonCompanionWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 05F8D2103A00200200CC1001 /* Build configuration list for PBXNativeTarget "CinnamonCompanionWidgets" */;
+			buildPhases = (
+				05F8D2073A00200200CC1001 /* Sources */,
+				05F8D2063A00200200CC1001 /* Frameworks */,
+				05F8D2083A00200200CC1001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				05F8D2053A00200200CC1001 /* CinnamonCompanionWidgets */,
+			);
+			name = CinnamonCompanionWidgets;
+			packageProductDependencies = (
+			);
+			productName = CinnamonCompanionWidgets;
+			productReference = 05F8D2023A00200200CC1001 /* CinnamonCompanionWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -99,6 +163,9 @@
 				LastUpgradeCheck = 2630;
 				TargetAttributes = {
 					05E08E5E2F841B9800934175 = {
+						CreatedOnToolsVersion = 26.3;
+					};
+					05F8D20A3A00200200CC1001 = {
 						CreatedOnToolsVersion = 26.3;
 					};
 				};
@@ -122,12 +189,20 @@
 			projectRoot = "";
 			targets = (
 				05E08E5E2F841B9800934175 /* HotelCompanion */,
+				05F8D20A3A00200200CC1001 /* CinnamonCompanionWidgets */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		05E08E5D2F841B9800934175 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		05F8D2083A00200200CC1001 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -144,7 +219,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		05F8D2073A00200200CC1001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		05F8D20B3A00200200CC1001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 05F8D20A3A00200200CC1001 /* CinnamonCompanionWidgets */;
+			targetProxy = 05F8D2033A00200200CC1001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		05E08E682F841B9A00934175 /* Debug */ = {
@@ -340,6 +430,58 @@
 			};
 			name = Release;
 		};
+		05F8D20C3A00200200CC1001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Cinnamon Widgets";
+				INFOPLIST_KEY_NSExtension_NSExtensionPointIdentifier = com.apple.widgetkit-extension;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kawish13.HotelCompanion.CinnamonCompanionWidgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		05F8D20D3A00200200CC1001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Cinnamon Widgets";
+				INFOPLIST_KEY_NSExtension_NSExtensionPointIdentifier = com.apple.widgetkit-extension;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kawish13.HotelCompanion.CinnamonCompanionWidgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -357,6 +499,15 @@
 			buildConfigurations = (
 				05E08E6B2F841B9A00934175 /* Debug */,
 				05E08E6C2F841B9A00934175 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		05F8D2103A00200200CC1001 /* Build configuration list for PBXNativeTarget "CinnamonCompanionWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				05F8D20C3A00200200CC1001 /* Debug */,
+				05F8D20D3A00200200CC1001 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

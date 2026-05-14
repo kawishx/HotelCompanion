@@ -10,6 +10,7 @@ import SwiftUI
 struct HomeView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @StateObject private var viewModel: HomeViewModel
+    @State private var selectedQuickActionRoute: HomeQuickActionRoute?
     private let quickActionColumns = [
         GridItem(.flexible(), spacing: AppSpacing.medium),
         GridItem(.flexible(), spacing: AppSpacing.medium)
@@ -38,6 +39,9 @@ struct HomeView: View {
         .background(AppColors.backgroundCream.ignoresSafeArea())
         .navigationTitle("Home")
         .navigationBarTitleDisplayMode(.large)
+        .navigationDestination(item: $selectedQuickActionRoute) { route in
+            quickActionDestination(for: route)
+        }
     }
 }
 
@@ -157,7 +161,9 @@ private extension HomeView {
 
             LazyVGrid(columns: quickActionColumns, spacing: AppSpacing.medium) {
                 ForEach(viewModel.quickActions) { action in
-                    HomeQuickActionCard(action: action) { }
+                    HomeQuickActionCard(action: action) {
+                        selectedQuickActionRoute = action.route
+                    }
                 }
             }
         }
@@ -275,6 +281,24 @@ private extension HomeView {
                 .accessibilityLabel("View all notifications")
                 .accessibilityHint("Opens the notifications screen")
             }
+        }
+    }
+
+    @ViewBuilder
+    func quickActionDestination(for route: HomeQuickActionRoute) -> some View {
+        switch route {
+        case .myStay:
+            MyStayView()
+        case .requestService:
+            ServiceRequestView()
+        case .bookExperience:
+            BookingManagementView()
+        case .orderFood:
+            DiningView()
+        case .exploreNearby:
+            ExploreNearbyView()
+        case .concierge:
+            ConciergeRequestsView()
         }
     }
 
