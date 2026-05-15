@@ -100,8 +100,11 @@ final class LoginViewModel: ObservableObject {
         "Use \(biometricKind.displayName)"
     }
 
-    var shouldShowBiometricButton: Bool {
-        isBiometricAvailable && isBiometricLoginEnabled && mode == .signIn
+    func shouldShowBiometricButton(hasActiveSession: Bool) -> Bool {
+        isBiometricAvailable &&
+        isBiometricLoginEnabled &&
+        mode == .signIn &&
+        (hasActiveSession || canSignIn)
     }
 
     var primaryActionTitle: String {

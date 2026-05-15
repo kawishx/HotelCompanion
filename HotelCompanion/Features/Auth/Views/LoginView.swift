@@ -171,7 +171,7 @@ struct LoginView: View {
             .accessibilityLabel("\(viewModel.primaryActionTitle) with email and password")
             .accessibilityHint(viewModel.canSignIn ? "Submits your credentials and continues into the app" : "Enter both email and password to continue")
 
-            if viewModel.shouldShowBiometricButton {
+            if viewModel.shouldShowBiometricButton(hasActiveSession: authViewModel.isAuthenticated) {
                 SecondaryButton(
                     title: viewModel.biometricButtonTitle,
                     systemImage: viewModel.biometricKind.systemImageName
@@ -184,6 +184,12 @@ struct LoginView: View {
                 .accessibilityHint("Signs in with biometric authentication")
                 .disabled(authViewModel.isLoading)
                 .opacity(authViewModel.isLoading ? 0.55 : 1)
+            } else if viewModel.isBiometricLoginEnabled && viewModel.mode == .signIn && !authViewModel.isAuthenticated {
+                StatusChip(
+                    title: "Biometric sign in becomes available after you sign in once on this device.",
+                    systemImage: viewModel.biometricKind.systemImageName,
+                    tone: .neutral
+                )
             }
 
             SecondaryButton(title: "Continue as Guest", systemImage: "person.fill", alignment: .center) {

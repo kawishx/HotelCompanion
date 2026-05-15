@@ -38,11 +38,19 @@ struct SettingsView: View {
                         }
                         .tint(AppColors.accentGold)
                         .accessibilityHint("Turns biometric sign in on or off")
+                        .disabled(!canManageBiometricLogin)
 
                         Text(viewModel.availabilityMessage)
                             .font(AppTypography.footnote)
                             .foregroundStyle(AppColors.secondaryText)
                             .fixedSize(horizontal: false, vertical: true)
+
+                        if !canManageBiometricLogin {
+                            Text("Sign in with a hotel account first to enable biometric protection for your saved session.")
+                                .font(AppTypography.footnote)
+                                .foregroundStyle(AppColors.secondaryText)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
                     }
                 }
 
@@ -104,6 +112,10 @@ struct SettingsView: View {
             get: { viewModel.isBiometricLoginEnabled },
             set: { viewModel.updateBiometricPreference(isEnabled: $0) }
         )
+    }
+
+    private var canManageBiometricLogin: Bool {
+        authViewModel.isAuthenticated && !authViewModel.isGuestSession
     }
 }
 

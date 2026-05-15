@@ -11,6 +11,6 @@ enum AppFlow {
     case splash
     case onboarding
     case login
+    case biometricUnlock
     case mainTabs
 }
-

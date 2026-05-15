@@ -113,6 +113,18 @@ final class BiometricAuthManager {
         return .unavailable("Biometric authentication is unavailable.")
     }
 
+    func shouldRequireBiometricUnlock(for session: UserSession?) -> Bool {
+        guard let session, !session.isGuest, isBiometricLoginEnabled else {
+            return false
+        }
+
+        if case .available = checkBiometricAvailability() {
+            return true
+        }
+
+        return false
+    }
+
     func authenticateUser(reason: String) async -> Result<Void, BiometricAuthError> {
         let context = LAContext()
         context.localizedCancelTitle = "Use Password Instead"
